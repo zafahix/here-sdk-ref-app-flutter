@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,19 @@ import 'route_preferences_model.dart';
 class RouteTextOptionsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final RouteTextOptions textOptions = context.select((RoutePreferencesModel model) => model.sharedRouteTextOptions);
+    final RouteTextOptions textOptions = context.select(
+      (RoutePreferencesModel model) => model.sharedRouteTextOptions,
+    );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        PreferencesSectionTitle(title: AppLocalizations.of(context)!.routeTextOptionsTitle),
-        PreferencesRowTitle(title: AppLocalizations.of(context)!.unitSystemTitle),
+        PreferencesSectionTitle(
+          title: AppLocalizations.of(context)!.routeTextOptionsTitle,
+        ),
+        PreferencesRowTitle(
+          title: AppLocalizations.of(context)!.unitSystemTitle,
+        ),
         Container(
           decoration: UIStyle.roundedRectDecoration(),
           child: DropdownButtonHideUnderline(
@@ -51,12 +57,15 @@ class RouteTextOptionsWidget extends StatelessWidget {
                 final RouteTextOptions newOptions = RouteTextOptions()
                   ..language = textOptions.language
                   ..unitSystem = UnitSystem.values[unit];
-                context.read<RoutePreferencesModel>().sharedRouteTextOptions = newOptions;
+                context.read<RoutePreferencesModel>().sharedRouteTextOptions =
+                    newOptions;
               },
             ),
           ),
         ),
-        PreferencesRowTitle(title: AppLocalizations.of(context)!.languageCodeTitle),
+        PreferencesRowTitle(
+          title: AppLocalizations.of(context)!.languageCodeTitle,
+        ),
         Container(
           decoration: UIStyle.roundedRectDecoration(),
           child: DropdownButtonHideUnderline(
@@ -67,7 +76,8 @@ class RouteTextOptionsWidget extends StatelessWidget {
                 final RouteTextOptions newOptions = RouteTextOptions()
                   ..language = LanguageCode.values[language]
                   ..unitSystem = textOptions.unitSystem;
-                context.read<RoutePreferencesModel>().sharedRouteTextOptions = newOptions;
+                context.read<RoutePreferencesModel>().sharedRouteTextOptions =
+                    newOptions;
               },
             ),
           ),

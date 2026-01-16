@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 HERE Europe B.V.
+ * Copyright (C) 2025-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ import '../common/gradient_elevated_button.dart';
 import '../common/ui_style.dart';
 
 // HERE Privacy Notice Url
-const String _herePrivacyNoticeUrl = 'https://legal.here.com/here-network-positioning-via-sdk';
+const String _herePrivacyNoticeUrl =
+    'https://legal.here.com/here-network-positioning-via-sdk';
 
 const EdgeInsets _commonPadding = const EdgeInsets.symmetric(
   vertical: UIStyle.contentMarginLarge,
@@ -60,7 +61,10 @@ class HerePrivacyNoticeScreen extends StatelessWidget {
         padding: _commonPadding,
         child: Column(
           children: <Widget>[
-            Text(localized.privacyNoticePlaceholder, style: TextStyle(fontSize: UIStyle.bigFontSize)),
+            Text(
+              localized.privacyNoticePlaceholder,
+              style: TextStyle(fontSize: UIStyle.bigFontSize),
+            ),
             HerePrivacyNoticeWidget(),
           ],
         ),
@@ -87,7 +91,9 @@ class HerePrivacyNoticeWidget extends StatelessWidget {
     AppLocalizations localized = AppLocalizations.of(context)!;
     return RichText(
       text: TextSpan(
-        style: DefaultTextStyle.of(context).style.copyWith(fontSize: UIStyle.bigFontSize),
+        style: DefaultTextStyle.of(
+          context,
+        ).style.copyWith(fontSize: UIStyle.bigFontSize),
         children: [
           TextSpan(text: localized.herePrivacyNotice),
           TextSpan(
@@ -96,7 +102,8 @@ class HerePrivacyNoticeWidget extends StatelessWidget {
               color: Colors.blue,
               decoration: TextDecoration.underline,
             ),
-            recognizer: TapGestureRecognizer()..onTap = () => _launchURL(_herePrivacyNoticeUrl),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => _launchURL(_herePrivacyNoticeUrl),
           ),
         ],
       ),
@@ -116,12 +123,17 @@ class HerePrivacyDialog extends StatelessWidget {
       child: AlertDialog(
         scrollable: true,
         title: Text(localized.welcome, textAlign: TextAlign.center),
-        content: Column(children: <Widget>[Text(localized.welcomeMessage), HerePrivacyNoticeWidget()]),
+        content: Column(
+          children: <Widget>[
+            Text(localized.welcomeMessage),
+            HerePrivacyNoticeWidget(),
+          ],
+        ),
         actions: [
           GradientElevatedButton(
             title: Text(localized.continueTitle),
             onPressed: () => Navigator.of(context).pop(true),
-          )
+          ),
         ],
         contentPadding: _commonPadding,
         actionsPadding: _commonPadding,
@@ -141,6 +153,9 @@ Future<void> showHerePrivacyDialog(BuildContext context) async {
     },
   );
   if (accepted == true) {
-    Provider.of<AppPreferences>(context, listen: false).isHerePrivacyDialogShown = true;
+    Provider.of<AppPreferences>(
+      context,
+      listen: false,
+    ).isHerePrivacyDialogShown = true;
   }
 }

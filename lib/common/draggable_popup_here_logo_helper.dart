@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,17 +48,24 @@ class DraggablePopupHereLogoHelper extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DraggablePopupHereLogoHelperState createState() => _DraggablePopupHereLogoHelperState();
+  _DraggablePopupHereLogoHelperState createState() =>
+      _DraggablePopupHereLogoHelperState();
 }
 
-class _DraggablePopupHereLogoHelperState extends State<DraggablePopupHereLogoHelper> {
+class _DraggablePopupHereLogoHelperState
+    extends State<DraggablePopupHereLogoHelper> {
   bool _processEvents = true;
 
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.scheduleFrameCallback((timeStamp) => SchedulerBinding.instance.addPostFrameCallback(
-        (timeStamp) => _updateHereLogoPosition(widget.draggableScrollableSheet.initialChildSize)));
+    SchedulerBinding.instance.scheduleFrameCallback(
+      (timeStamp) => SchedulerBinding.instance.addPostFrameCallback(
+        (timeStamp) => _updateHereLogoPosition(
+          widget.draggableScrollableSheet.initialChildSize,
+        ),
+      ),
+    );
   }
 
   @override
@@ -84,13 +91,20 @@ class _DraggablePopupHereLogoHelperState extends State<DraggablePopupHereLogoHel
 
     final double height = MediaQuery.of(context).size.height;
     final double popupHeight = height * extent;
-    final RenderBox box = widget.hereMapKey.currentContext!.findRenderObject() as RenderBox;
-    final double margin = (popupHeight - (height - box.paintBounds.bottom)) * widget.hereMapController.pixelScale;
+    final RenderBox box =
+        widget.hereMapKey.currentContext!.findRenderObject() as RenderBox;
+    final double margin =
+        (popupHeight - (height - box.paintBounds.bottom)) *
+        widget.hereMapController.pixelScale;
 
     if (margin >= 0) {
       widget.hereMapController.setWatermarkLocation(
         Anchor2D.withHorizontalAndVertical(0.5, 1),
-        Point2D(0, -(widget.hereMapController.watermarkSize.height / 2) - margin.truncate()),
+        Point2D(
+          0,
+          -(widget.hereMapController.watermarkSize.height / 2) -
+              margin.truncate(),
+        ),
       );
     } else {
       widget.hereMapController.setWatermarkLocation(

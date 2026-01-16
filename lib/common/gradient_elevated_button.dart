@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,38 +46,33 @@ class GradientElevatedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
+    style: ElevatedButton.styleFrom(
+      padding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
+      ),
+    ),
+    child: Ink(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [primaryColor, secondaryColor]),
+        borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
+      ),
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: UIStyle.contentMarginExtraLarge,
+            horizontal: UIStyle.contentMarginExtraHuge,
           ),
-        ),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                primaryColor,
-                secondaryColor,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
-          ),
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: UIStyle.contentMarginExtraLarge,
-                horizontal: UIStyle.contentMarginExtraHuge,
-              ),
-              child: DefaultTextStyle(
-                child: title,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: UIStyle.hugeFontSize,
-                ),
-              ),
+          child: DefaultTextStyle(
+            child: title,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: UIStyle.hugeFontSize,
             ),
           ),
         ),
-        onPressed: onPressed,
-      );
+      ),
+    ),
+    onPressed: onPressed,
+  );
 }

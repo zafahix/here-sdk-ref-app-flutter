@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,9 @@ import 'package:here_sdk/transport.dart';
 import 'package:here_sdk_reference_application_flutter/l10n/generated/app_localizations.dart';
 
 extension TruckOptionsUtil on TruckOptions {
-  TruckOptions copyTruckOptionsWith({required TruckSpecifications truckSpecifications}) {
+  TruckOptions copyTruckOptionsWith({
+    required TruckSpecifications truckSpecifications,
+  }) {
     return TruckOptions()
       ..routeOptions = routeOptions
       ..textOptions = textOptions
@@ -49,22 +51,41 @@ extension TruckSpecificationsUtils on TruckSpecifications {
     String? payloadCapacityInKilograms,
     String? trailerAxleCount,
   }) {
-    int? _parse(String? value, int? fallback) => value != null ? int.tryParse(value) : fallback;
+    int? _parse(String? value, int? fallback) =>
+        value != null ? int.tryParse(value) : fallback;
 
     return TruckSpecifications.withDefaults()
-      ..grossWeightInKilograms = _parse(grossWeightInKilograms, this.grossWeightInKilograms)
-      ..currentWeightInKilograms = _parse(currentWeightInKilograms, this.currentWeightInKilograms)
-      ..weightPerAxleInKilograms = _parse(weightPerAxleInKilograms, this.weightPerAxleInKilograms)
+      ..grossWeightInKilograms = _parse(
+        grossWeightInKilograms,
+        this.grossWeightInKilograms,
+      )
+      ..currentWeightInKilograms = _parse(
+        currentWeightInKilograms,
+        this.currentWeightInKilograms,
+      )
+      ..weightPerAxleInKilograms = _parse(
+        weightPerAxleInKilograms,
+        this.weightPerAxleInKilograms,
+      )
       ..weightPerAxleGroup = weightPerAxleGroup ?? this.weightPerAxleGroup
-      ..heightInCentimeters = _parse(heightInCentimeters, this.heightInCentimeters)
+      ..heightInCentimeters = _parse(
+        heightInCentimeters,
+        this.heightInCentimeters,
+      )
       ..widthInCentimeters = _parse(widthInCentimeters, this.widthInCentimeters)
-      ..lengthInCentimeters = _parse(lengthInCentimeters, this.lengthInCentimeters)
+      ..lengthInCentimeters = _parse(
+        lengthInCentimeters,
+        this.lengthInCentimeters,
+      )
       ..axleCount = _parse(axleCount, this.axleCount)
       ..isTruckLight = isTruckLight ?? this.isTruckLight
       ..truckType = truckType ?? this.truckType
       ..trailerCount = _parse(trailerCount, this.trailerCount)
       ..trailerAxleCount = _parse(trailerAxleCount, this.trailerAxleCount)
-      ..payloadCapacityInKilograms = _parse(payloadCapacityInKilograms, this.payloadCapacityInKilograms);
+      ..payloadCapacityInKilograms = _parse(
+        payloadCapacityInKilograms,
+        this.payloadCapacityInKilograms,
+      );
   }
 
   String specificationsString(AppLocalizations localizations) {
@@ -88,11 +109,26 @@ extension TruckSpecificationsUtils on TruckSpecifications {
     addSpec(localizations.truckWidthRowTitle, widthInCentimeters);
 
     if (weightPerAxleGroup != null) {
-      addSpec(localizations.singleAxleGroup, weightPerAxleGroup!.singleAxleGroupInKilograms);
-      addSpec(localizations.tandemAxleGroup, weightPerAxleGroup!.tandemAxleGroupInKilograms);
-      addSpec(localizations.tripleAxleGroup, weightPerAxleGroup!.tripleAxleGroupInKilograms);
-      addSpec(localizations.quadAxleGroup, weightPerAxleGroup!.quadAxleGroupInKilograms);
-      addSpec(localizations.quintAxleGroup, weightPerAxleGroup!.quintAxleGroupInKilograms);
+      addSpec(
+        localizations.singleAxleGroup,
+        weightPerAxleGroup!.singleAxleGroupInKilograms,
+      );
+      addSpec(
+        localizations.tandemAxleGroup,
+        weightPerAxleGroup!.tandemAxleGroupInKilograms,
+      );
+      addSpec(
+        localizations.tripleAxleGroup,
+        weightPerAxleGroup!.tripleAxleGroupInKilograms,
+      );
+      addSpec(
+        localizations.quadAxleGroup,
+        weightPerAxleGroup!.quadAxleGroupInKilograms,
+      );
+      addSpec(
+        localizations.quintAxleGroup,
+        weightPerAxleGroup!.quintAxleGroupInKilograms,
+      );
     }
 
     return specs.join(', ');

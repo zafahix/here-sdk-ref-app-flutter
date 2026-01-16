@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 HERE Europe B.V.
+ * Copyright (C) 2025-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,12 +63,12 @@ class CatalogConfigurationData {
   }
 
   CatalogConfigurationData.from(CatalogConfiguration config)
-      : hrn = config.catalog.id.hrn,
-        version = config.catalog.id.version,
-        allowDownload = config.allowDownload,
-        ignoreCachedData = _ignoredCachedDataDefaultValue,
-        cacheExpirationInSec = config.cacheExpirationPeriod?.inSeconds,
-        patchHrn = config.patchHrn;
+    : hrn = config.catalog.id.hrn,
+      version = config.catalog.id.version,
+      allowDownload = config.allowDownload,
+      ignoreCachedData = _ignoredCachedDataDefaultValue,
+      cacheExpirationInSec = config.cacheExpirationPeriod?.inSeconds,
+      patchHrn = config.patchHrn;
 
   final String hrn;
   final int? version;
@@ -110,16 +110,23 @@ class CatalogConfigurationData {
     };
   }
 
-  static List<CatalogConfigurationData>? fromDynamicListToList(List<dynamic>? list) {
+  static List<CatalogConfigurationData>? fromDynamicListToList(
+    List<dynamic>? list,
+  ) {
     if (list?.isNotEmpty ?? false) {
-      final List<Map<String, dynamic>> listOfMaps = list!.cast<Map<String, dynamic>>();
+      final List<Map<String, dynamic>> listOfMaps = list!
+          .cast<Map<String, dynamic>>();
       return listOfMaps.map(CatalogConfigurationData.fromMap).toList();
     }
     return null;
   }
 
-  static List<dynamic> toDynamicListFromList(List<CatalogConfigurationData> list) {
-    return list.map((CatalogConfigurationData catConf) => catConf.toMap()).toList();
+  static List<dynamic> toDynamicListFromList(
+    List<CatalogConfigurationData> list,
+  ) {
+    return list
+        .map((CatalogConfigurationData catConf) => catConf.toMap())
+        .toList();
   }
 }
 
@@ -128,7 +135,8 @@ extension CatalogConfigurationDataDescriptionUtil on CatalogConfigurationData {
     return '${localized.hrn}: $hrn, ${version == -1 ? localized.latest : version ?? localized.latest}';
   }
 
-  String description(AppLocalizations localized) => '${localized.patchHrn.toUpperCase()}: ${patchHrn.unwrapped}';
+  String description(AppLocalizations localized) =>
+      '${localized.patchHrn.toUpperCase()}: ${patchHrn.unwrapped}';
 
   /// Converts this `CatalogConfigurationData` to a `CatalogConfiguration` for SDK usage.
   CatalogConfiguration toSdkCatalogConfiguration() {
@@ -138,16 +146,21 @@ extension CatalogConfigurationDataDescriptionUtil on CatalogConfigurationData {
           ? CatalogVersionHint.specific(version!)
           : CatalogVersionHint.latestWithIgnoringCachedData(ignoreCachedData),
     );
-    final CatalogConfiguration catalogConfig = CatalogConfiguration(desiredCatalog)
-      ..allowDownload = allowDownload
-      ..cacheExpirationPeriod = cacheExpirationInSec != null ? Duration(seconds: cacheExpirationInSec!) : null
-      ..patchHrn = patchHrn;
+    final CatalogConfiguration catalogConfig =
+        CatalogConfiguration(desiredCatalog)
+          ..allowDownload = allowDownload
+          ..cacheExpirationPeriod = cacheExpirationInSec != null
+              ? Duration(seconds: cacheExpirationInSec!)
+              : null
+          ..patchHrn = patchHrn;
     return catalogConfig;
   }
 }
 
 extension CatalogConfigurationDataListUtil on List<CatalogConfigurationData> {
   List<CatalogConfiguration> toSdkCatalogConfigurations() {
-    return map((CatalogConfigurationData c) => c.toSdkCatalogConfiguration()).toList();
+    return map(
+      (CatalogConfigurationData c) => c.toSdkCatalogConfiguration(),
+    ).toList();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,12 +47,8 @@ class MarqueeWidget extends StatefulWidget {
     this.animationDuration = const Duration(
       milliseconds: _kDefaultAnimationDuration,
     ),
-    this.backDuration = const Duration(
-      milliseconds: _kDefaultBackDuration,
-    ),
-    this.pauseDuration = const Duration(
-      milliseconds: _kDefaultPauseDuration,
-    ),
+    this.backDuration = const Duration(milliseconds: _kDefaultBackDuration),
+    this.pauseDuration = const Duration(milliseconds: _kDefaultPauseDuration),
   });
 
   @override

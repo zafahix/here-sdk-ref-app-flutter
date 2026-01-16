@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,10 @@ extension RegionExtensions on List<Region>? {
 
   List<RegionId> regionIds() {
     if (this != null) {
-      return this!.map((e) => [e.regionId, ..._getChildRegionIds(e) ?? <RegionId>[]]).expand((e) => e).toList();
+      return this!
+          .map((e) => [e.regionId, ..._getChildRegionIds(e) ?? <RegionId>[]])
+          .expand((e) => e)
+          .toList();
     } else {
       return <RegionId>[];
     }

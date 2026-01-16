@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,9 +80,7 @@ class _RouteWayPointsListState extends State<RouteWayPointsList> {
           delegate: ReorderableSliverChildBuilderDelegate(
             (context, index) {
               if (index.isOdd) {
-                return Divider(
-                  height: 1,
-                );
+                return Divider(height: 1);
               }
 
               return _buildItem(context, index ~/ 2);
@@ -96,7 +94,12 @@ class _RouteWayPointsListState extends State<RouteWayPointsList> {
             childCount: _wayPoints.length * 2 - 1,
           ),
           onReorder: (oldIndex, newIndex) {
-            setState(() => _wayPoints.insert(newIndex ~/ 2, _wayPoints.removeAt(oldIndex ~/ 2)));
+            setState(
+              () => _wayPoints.insert(
+                newIndex ~/ 2,
+                _wayPoints.removeAt(oldIndex ~/ 2),
+              ),
+            );
             widget.onChanged(_wayPoints);
           },
         ),
@@ -105,22 +108,22 @@ class _RouteWayPointsListState extends State<RouteWayPointsList> {
   }
 
   Widget _buildHeader(BuildContext context) => Row(
-        children: [
-          IconButton(
-            icon: HdsIconWidget(HdsAssetsPaths.arrowLeftIcon),
-            onPressed: () => Navigator.of(context).pop(),
+    children: [
+      IconButton(
+        icon: HdsIconWidget(HdsAssetsPaths.arrowLeftIcon),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      Expanded(
+        child: Text(
+          AppLocalizations.of(context)!.wayPointsListTitle,
+          style: TextStyle(
+            fontSize: UIStyle.hugeFontSize,
+            color: Theme.of(context).colorScheme.primary,
           ),
-          Expanded(
-            child: Text(
-              AppLocalizations.of(context)!.wayPointsListTitle,
-              style: TextStyle(
-                fontSize: UIStyle.hugeFontSize,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-        ],
-      );
+        ),
+      ),
+    ],
+  );
 
   Widget _buildItem(BuildContext context, int index) {
     WayPointInfo wp = _wayPoints[index];
@@ -135,9 +138,7 @@ class _RouteWayPointsListState extends State<RouteWayPointsList> {
             HdsAssetsPaths.dragListIcon,
             color: colorScheme.primary,
           ),
-          Container(
-            width: UIStyle.contentMarginLarge,
-          ),
+          Container(width: UIStyle.contentMarginLarge),
           HdsIconWidget(
             isCurrent ? HdsAssetsPaths.center : HdsAssetsPaths.mapMarker,
             color: colorScheme.primary,
@@ -159,9 +160,7 @@ class _RouteWayPointsListState extends State<RouteWayPointsList> {
     }
 
     List<Widget> dismissBackgroundItems = [
-      Container(
-        width: UIStyle.contentMarginLarge,
-      ),
+      Container(width: UIStyle.contentMarginLarge),
       HdsIconWidget(
         HdsAssetsPaths.deleteIcon,
         color: UIStyle.removeWayPointIconColor,
@@ -173,15 +172,11 @@ class _RouteWayPointsListState extends State<RouteWayPointsList> {
       key: ObjectKey(wp),
       background: Container(
         color: UIStyle.removeWayPointBackgroundColor,
-        child: Row(
-          children: dismissBackgroundItems,
-        ),
+        child: Row(children: dismissBackgroundItems),
       ),
       secondaryBackground: Container(
         color: UIStyle.removeWayPointBackgroundColor,
-        child: Row(
-          children: dismissBackgroundItems.reversed.toList(),
-        ),
+        child: Row(children: dismissBackgroundItems.reversed.toList()),
       ),
       onDismissed: (direction) async {
         setState(() => _wayPoints.removeAt(index));

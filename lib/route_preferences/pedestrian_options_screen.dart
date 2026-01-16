@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,9 @@ import 'route_text_options_widget.dart';
 class PedestrianOptionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final PedestrianOptions pedestrianOptions =
-        context.select((RoutePreferencesModel model) => model.pedestrianOptions);
+    final PedestrianOptions pedestrianOptions = context.select(
+      (RoutePreferencesModel model) => model.pedestrianOptions,
+    );
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -43,10 +44,15 @@ class PedestrianOptionsScreen extends StatelessWidget {
           children: [
             RouteOptionsWidget(),
             RouteTextOptionsWidget(),
-            PreferencesSectionTitle(title: AppLocalizations.of(context)!.walkSpeedTitle),
-            PreferencesRowTitle(title: AppLocalizations.of(context)!.walkSpeedUnitTitle),
+            PreferencesSectionTitle(
+              title: AppLocalizations.of(context)!.walkSpeedTitle,
+            ),
+            PreferencesRowTitle(
+              title: AppLocalizations.of(context)!.walkSpeedUnitTitle,
+            ),
             NumericTextField(
-              initialValue: pedestrianOptions.walkSpeedInMetersPerSecond.toString(),
+              initialValue: pedestrianOptions.walkSpeedInMetersPerSecond
+                  .toString(),
               isInteger: false,
               onChanged: (text) {
                 final PedestrianOptions newOptions = PedestrianOptions()
@@ -54,7 +60,8 @@ class PedestrianOptionsScreen extends StatelessWidget {
                   ..textOptions = pedestrianOptions.textOptions
                   ..avoidanceOptions = AvoidanceOptions()
                   ..walkSpeedInMetersPerSecond = double.tryParse(text) ?? 0;
-                context.read<RoutePreferencesModel>().pedestrianOptions = newOptions;
+                context.read<RoutePreferencesModel>().pedestrianOptions =
+                    newOptions;
               },
             ),
           ],

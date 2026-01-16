@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,10 @@ Future<bool?> askForPositionSource(BuildContext context) async {
       children: [
         SimpleDialogOption(
           child: ListTile(
-            leading: HdsIconWidget.medium(HdsAssetsPaths.path, color: Theme.of(context).colorScheme.onSecondary),
+            leading: HdsIconWidget.medium(
+              HdsAssetsPaths.path,
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
             title: Text(appLocalizations.simulatedLocationSourceTitle),
           ),
           onPressed: () => Navigator.of(context).pop(true),

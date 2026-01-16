@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,11 @@ import 'map_loader_controller.dart';
 
 /// Shows confirmation dialog and then cancels download a [Region].
 extension CancelDownloadExtension on MapLoaderController {
-  void cancelDownloadWithConfirmation(BuildContext context, Region region, [List<RegionId>? childRegions]) async {
+  void cancelDownloadWithConfirmation(
+    BuildContext context,
+    Region region, [
+    List<RegionId>? childRegions,
+  ]) async {
     this.pauseDownload(region.regionId);
 
     if (await _askForCancelMapLoading(context, region.name)) {
@@ -43,11 +47,16 @@ extension CancelDownloadExtension on MapLoaderController {
 }
 
 /// Creates a confirmation dialog to cancel map loading.
-Future<bool> _askForCancelMapLoading(BuildContext context, String regionName) async {
+Future<bool> _askForCancelMapLoading(
+  BuildContext context,
+  String regionName,
+) async {
   AppLocalizations appLocalizations = AppLocalizations.of(context)!;
   return Util.showCommonConfirmationDialog(
     context: context,
-    title: Util.formatString(appLocalizations.stopMapDownloadDialogTitle, [regionName]),
+    title: Util.formatString(appLocalizations.stopMapDownloadDialogTitle, [
+      regionName,
+    ]),
     actionTitle: appLocalizations.stopMapDownloadButtonTitle,
   );
 }

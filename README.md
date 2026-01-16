@@ -186,7 +186,7 @@ We provide the code 'AS IS'. Using the source code does not come with any additi
 
 ## License
 
-Copyright (C) 2020-2025 HERE Europe B.V.
+Copyright (C) 2020-2026 HERE Europe B.V.
 
 See the [LICENSE](./LICENSE) file in the root folder of this project for license details.
 

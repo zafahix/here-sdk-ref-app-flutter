@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,9 @@ import 'truck_specifications_screen.dart';
 class TruckOptionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final TruckOptions truckOptions = context.select((RoutePreferencesModel model) => model.truckOptions);
+    final TruckOptions truckOptions = context.select(
+      (RoutePreferencesModel model) => model.truckOptions,
+    );
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     return SafeArea(
       child: SingleChildScrollView(
@@ -51,21 +53,32 @@ class TruckOptionsScreen extends StatelessWidget {
             RouteOptionsWidget(),
             RouteTextOptionsWidget(),
             RouteAvoidanceOptionsWidget(),
-            PreferencesSectionTitle(title: localizations.truckSpecificationsTitle),
+            PreferencesSectionTitle(
+              title: localizations.truckSpecificationsTitle,
+            ),
             PreferencesDisclosureRowWidget(
               title: localizations.specificationsTitle,
-              subTitle: truckOptions.truckSpecifications.specificationsString(localizations),
+              subTitle: truckOptions.truckSpecifications.specificationsString(
+                localizations,
+              ),
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => TruckSpecificationsScreen()),
+                MaterialPageRoute(
+                  builder: (context) => TruckSpecificationsScreen(),
+                ),
               ),
             ),
             PreferencesDisclosureRowWidget(
               title: localizations.hazardousGoodsTitle,
-              subTitle: EnumStringHelper.hazardousMaterialsNamesToString(context, truckOptions.hazardousMaterials),
+              subTitle: EnumStringHelper.hazardousMaterialsNamesToString(
+                context,
+                truckOptions.hazardousMaterials,
+              ),
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => TruckHazardousMaterialsScreen()),
+                MaterialPageRoute(
+                  builder: (context) => TruckHazardousMaterialsScreen(),
+                ),
               ),
             ),
             PreferencesRowTitle(title: localizations.tunnelCategoryTitle),
@@ -78,7 +91,8 @@ class TruckOptionsScreen extends StatelessWidget {
                   onChanged: (category) {
                     Transport.TunnelCategory? tunnelCategory;
                     if (category != EnumStringHelper.noneValueIndex) {
-                      tunnelCategory = Transport.TunnelCategory.values[category];
+                      tunnelCategory =
+                          Transport.TunnelCategory.values[category];
                     }
                     final TruckOptions newOptions = TruckOptions()
                       ..routeOptions = truckOptions.routeOptions
@@ -87,7 +101,8 @@ class TruckOptionsScreen extends StatelessWidget {
                       ..truckSpecifications = truckOptions.truckSpecifications
                       ..linkTunnelCategory = tunnelCategory
                       ..hazardousMaterials = truckOptions.hazardousMaterials;
-                    context.read<RoutePreferencesModel>().truckOptions = newOptions;
+                    context.read<RoutePreferencesModel>().truckOptions =
+                        newOptions;
                   },
                 ),
               ),

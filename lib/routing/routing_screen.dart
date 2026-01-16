@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,13 +114,15 @@ class _RoutingScreenState extends State<RoutingScreen>
   void initState() {
     super.initState();
 
-    AppPreferences appPreferences = Provider.of<AppPreferences>(context, listen: false);
-    _routingEngine = appPreferences.useAppOffline ? Routing.OfflineRoutingEngine() : Routing.RoutingEngine();
-
-    _routesTabController = TabController(
-      length: _routes.length,
-      vsync: this,
+    AppPreferences appPreferences = Provider.of<AppPreferences>(
+      context,
+      listen: false,
     );
+    _routingEngine = appPreferences.useAppOffline
+        ? Routing.OfflineRoutingEngine()
+        : Routing.RoutingEngine();
+
+    _routesTabController = TabController(length: _routes.length, vsync: this);
 
     _transportModes = TransportModes.values;
     _transportModesTabController = TabController(
@@ -136,10 +138,7 @@ class _RoutingScreenState extends State<RoutingScreen>
     enableMapUpdate = false;
 
     _wayPointsController = WayPointsController(
-      wayPoints: [
-        widget.departure,
-        widget.destination,
-      ],
+      wayPoints: [widget.departure, widget.destination],
       currentLocation: widget.currentPosition,
     );
     _wayPointsController.addListener(() => _beginRouting());
@@ -166,7 +165,9 @@ class _RoutingScreenState extends State<RoutingScreen>
   void _initialiseUserPositioning() {
     _servicesStatusNotifier = DeviceLocationServicesStatusNotifier();
     _servicesStatusNotifier!.start(this);
-    _servicesStatusNotifier!.canLocateUserPositioning().then(_setCanLocateUserPosition);
+    _servicesStatusNotifier!.canLocateUserPositioning().then(
+      _setCanLocateUserPosition,
+    );
   }
 
   void _setCanLocateUserPosition(bool value) {
@@ -188,7 +189,8 @@ class _RoutingScreenState extends State<RoutingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final HereMapOptions options = HereMapOptions()..initialBackgroundColor = Theme.of(context).colorScheme.surface;
+    final HereMapOptions options = HereMapOptions()
+      ..initialBackgroundColor = Theme.of(context).colorScheme.surface;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, _) {
@@ -208,25 +210,27 @@ class _RoutingScreenState extends State<RoutingScreen>
                   options: options,
                   onMapCreated: _onMapCreated,
                 ),
-                if (!Provider.of<AppPreferences>(context, listen: false).useAppOffline) _buildTrafficButton(context),
+                if (!Provider.of<AppPreferences>(
+                  context,
+                  listen: false,
+                ).useAppOffline)
+                  _buildTrafficButton(context),
               ],
             ),
             extendBodyBehindAppBar: true,
-            bottomNavigationBar: _mapInitSuccess ? _buildBottomNavigationBar(context) : null,
+            bottomNavigationBar: _mapInitSuccess
+                ? _buildBottomNavigationBar(context)
+                : null,
             floatingActionButton: _canLocateUserPosition
                 ? (enableMapUpdate && _mapInitSuccess)
-                    ? null
-                    : ResetLocationButton(
-                        onPressed: _resetCurrentPosition,
-                      )
+                      ? null
+                      : ResetLocationButton(onPressed: _resetCurrentPosition)
                 : null,
           ),
           if (_routingInProgress)
             Container(
               color: Colors.white54,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: Center(child: CircularProgressIndicator()),
             ),
         ],
       ),
@@ -236,7 +240,8 @@ class _RoutingScreenState extends State<RoutingScreen>
   void _onMapCreated(HereMapController hereMapController) {
     _hereMapController = hereMapController;
 
-    CustomMapStyleSettings customMapStyleSettings = Provider.of<CustomMapStyleSettings>(context, listen: false);
+    CustomMapStyleSettings customMapStyleSettings =
+        Provider.of<CustomMapStyleSettings>(context, listen: false);
 
     MapSceneLoadSceneCallback mapSceneLoadSceneCallback = (MapError? error) {
       if (error != null) {
@@ -257,19 +262,27 @@ class _RoutingScreenState extends State<RoutingScreen>
       hereMapController.camera.lookAtPointWithGeoOrientationAndMeasure(
         widget.currentPosition,
         GeoOrientationUpdate(double.nan, double.nan),
-        MapMeasure(MapMeasureKind.distanceInMeters, Positioning.initDistanceToEarth),
+        MapMeasure(
+          MapMeasureKind.distanceInMeters,
+          Positioning.initDistanceToEarth,
+        ),
       );
       _routePoiHandler = RoutePoiHandler(
         hereMapController: hereMapController,
         wayPointsController: _wayPointsController,
-        onGetText: (place) => Util.makeDistanceString(context, place.distanceInMeters),
-        offline: Provider.of<AppPreferences>(context, listen: false).useAppOffline,
+        onGetText: (place) =>
+            Util.makeDistanceString(context, place.distanceInMeters),
+        offline: Provider.of<AppPreferences>(
+          context,
+          listen: false,
+        ).useAppOffline,
       );
 
       initPositioning(
         context: context,
         hereMapController: hereMapController,
-        onLocationUpdated: (location) => _wayPointsController.currentLocation = location.coordinates,
+        onLocationUpdated: (location) =>
+            _wayPointsController.currentLocation = location.coordinates,
       );
 
       _addGestureListeners();
@@ -278,12 +291,21 @@ class _RoutingScreenState extends State<RoutingScreen>
       _beginRouting();
     };
 
-    Util.loadMapScene(customMapStyleSettings, hereMapController, mapSceneLoadSceneCallback);
+    Util.loadMapScene(
+      customMapStyleSettings,
+      hereMapController,
+      mapSceneLoadSceneCallback,
+    );
     _initialiseUserPositioning();
   }
 
   void _addGestureListeners() {
-    _hereMapController.gestures.panListener = PanListener((state, origin, translation, velocity) {
+    _hereMapController.gestures.panListener = PanListener((
+      state,
+      origin,
+      translation,
+      velocity,
+    ) {
       if (enableMapUpdate) {
         setState(() => enableMapUpdate = false);
       }
@@ -294,7 +316,10 @@ class _RoutingScreenState extends State<RoutingScreen>
       _pickMapItem(touchPoint);
     });
 
-    _hereMapController.gestures.longPressListener = LongPressListener((state, point) {
+    _hereMapController.gestures.longPressListener = LongPressListener((
+      state,
+      point,
+    ) {
       if (state == GestureState.begin) {
         _showWayPointPopup(point);
       }
@@ -302,26 +327,35 @@ class _RoutingScreenState extends State<RoutingScreen>
   }
 
   void _resetCurrentPosition() {
-    GeoCoordinates coordinates = lastKnownLocation != null ? lastKnownLocation!.coordinates : widget.currentPosition;
+    GeoCoordinates coordinates = lastKnownLocation != null
+        ? lastKnownLocation!.coordinates
+        : widget.currentPosition;
 
     _hereMapController.camera.lookAtPointWithGeoOrientationAndMeasure(
       coordinates,
       GeoOrientationUpdate(double.nan, double.nan),
-      MapMeasure(MapMeasureKind.distanceInMeters, Positioning.initDistanceToEarth),
+      MapMeasure(
+        MapMeasureKind.distanceInMeters,
+        Positioning.initDistanceToEarth,
+      ),
     );
     setState(() => enableMapUpdate = true);
   }
 
   void _pickMapItem(Point2D touchPoint) {
     _hereMapController.pick(
-      MapSceneMapPickFilter(<MapSceneMapPickFilterContentType>[MapSceneMapPickFilterContentType.mapItems]),
+      MapSceneMapPickFilter(<MapSceneMapPickFilterContentType>[
+        MapSceneMapPickFilterContentType.mapItems,
+      ]),
       Rectangle2D(touchPoint, Size2D(_kTapRadius, _kTapRadius)),
       (MapPickResult? result) async {
         List<MapMarker>? mapMarkersList = result?.mapItems?.markers;
         if (mapMarkersList != null &&
             mapMarkersList.length != 0 &&
             _routePoiHandler.isPoiMarker(mapMarkersList.first)) {
-          Place place = _routePoiHandler.getPlaceFromMarker(mapMarkersList.first);
+          Place place = _routePoiHandler.getPlaceFromMarker(
+            mapMarkersList.first,
+          );
 
           PlaceDetailsPopupResult? result = await showPlaceDetailsPopup(
             context: context,
@@ -334,19 +368,23 @@ class _RoutingScreenState extends State<RoutingScreen>
             return;
           }
 
-          WayPointInfo wp = WayPointInfo.withPlace(
-            place: place,
-          );
+          WayPointInfo wp = WayPointInfo.withPlace(place: place);
 
           switch (result) {
             case PlaceDetailsPopupResult.routeTo:
               _wayPointsController.value = [
-                WayPointInfo(coordinates: lastKnownLocation?.coordinates ?? widget.currentPosition),
+                WayPointInfo(
+                  coordinates:
+                      lastKnownLocation?.coordinates ?? widget.currentPosition,
+                ),
                 wp,
               ];
               break;
             case PlaceDetailsPopupResult.addToRoute:
-              _wayPointsController.insert(_appropriateIndexToInsertWaypoint(wp), wp);
+              _wayPointsController.insert(
+                _appropriateIndexToInsertWaypoint(wp),
+                wp,
+              );
               break;
           }
 
@@ -359,7 +397,9 @@ class _RoutingScreenState extends State<RoutingScreen>
           return;
         }
 
-        _routesTabController.animateTo(_mapRoutes.indexOf(mapPolyLinesList.first));
+        _routesTabController.animateTo(
+          _mapRoutes.indexOf(mapPolyLinesList.first),
+        );
       },
     );
   }
@@ -367,10 +407,13 @@ class _RoutingScreenState extends State<RoutingScreen>
   int _appropriateIndexToInsertWaypoint(WayPointInfo wayPointInfo) {
     final List<WayPointInfo> waypoints = _wayPointsController.value;
     final GeoPolyline routeLine = _routes[_selectedRouteIndex].geometry;
-    final int indexOnRoute = routeLine.getNearestIndexTo(wayPointInfo.coordinates);
+    final int indexOnRoute = routeLine.getNearestIndexTo(
+      wayPointInfo.coordinates,
+    );
 
     for (int i = 1; i < waypoints.length - 1; ++i) {
-      if (routeLine.getNearestIndexTo(waypoints[i].coordinates) > indexOnRoute) {
+      if (routeLine.getNearestIndexTo(waypoints[i].coordinates) >
+          indexOnRoute) {
         return i;
       }
     }
@@ -386,7 +429,9 @@ class _RoutingScreenState extends State<RoutingScreen>
 
   void _showWayPointPopup(Point2D point) {
     _dismissWayPointPopup();
-    GeoCoordinates? coordinates = _hereMapController.viewToGeoCoordinates(point);
+    GeoCoordinates? coordinates = _hereMapController.viewToGeoCoordinates(
+      point,
+    );
 
     if (coordinates == null) {
       return;
@@ -398,14 +443,14 @@ class _RoutingScreenState extends State<RoutingScreen>
         hereMapController: _hereMapController,
         onRightButtonPressed: (place) {
           _dismissWayPointPopup();
-          _wayPointsController.add(place != null
-              ? WayPointInfo.withPlace(
-                  place: place,
-                  originalCoordinates: coordinates,
-                )
-              : WayPointInfo.withCoordinates(
-                  coordinates: coordinates,
-                ));
+          _wayPointsController.add(
+            place != null
+                ? WayPointInfo.withPlace(
+                    place: place,
+                    originalCoordinates: coordinates,
+                  )
+                : WayPointInfo.withCoordinates(coordinates: coordinates),
+          );
         },
       ),
       coordinates,
@@ -438,7 +483,8 @@ class _RoutingScreenState extends State<RoutingScreen>
     }
 
     if (_bottomBarKey.currentContext != null) {
-      final RenderBox bottomBarBox = _bottomBarKey.currentContext!.findRenderObject() as RenderBox;
+      final RenderBox bottomBarBox =
+          _bottomBarKey.currentContext!.findRenderObject() as RenderBox;
       final GeoBox? geoBox = GeoBox.containingGeoCoordinates(bounds);
 
       if (geoBox == null) {
@@ -470,9 +516,13 @@ class _RoutingScreenState extends State<RoutingScreen>
   }
 
   _updateSelectedRoute() {
-    _mapRoutes[_selectedRouteIndex].setRepresentation(mapRouteRepresentation(selected: false));
+    _mapRoutes[_selectedRouteIndex].setRepresentation(
+      mapRouteRepresentation(selected: false),
+    );
     _mapRoutes[_selectedRouteIndex].drawOrder = 0;
-    _mapRoutes[_routesTabController.index].setRepresentation(mapRouteRepresentation());
+    _mapRoutes[_routesTabController.index].setRepresentation(
+      mapRouteRepresentation(),
+    );
     _mapRoutes[_routesTabController.index].drawOrder = 1;
 
     _selectedRouteIndex = _routesTabController.index;
@@ -483,7 +533,10 @@ class _RoutingScreenState extends State<RoutingScreen>
 
   Widget _buildTrafficButton(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-    AppPreferences appPreferences = Provider.of<AppPreferences>(context, listen: false);
+    AppPreferences appPreferences = Provider.of<AppPreferences>(
+      context,
+      listen: false,
+    );
 
     return Align(
       alignment: Alignment.topRight,
@@ -498,13 +551,19 @@ class _RoutingScreenState extends State<RoutingScreen>
               child: Padding(
                 padding: EdgeInsets.all(UIStyle.contentMarginMedium),
                 child: HdsIconWidget(
-                  appPreferences.showTrafficLayers ? HdsAssetsPaths.trafficOff : HdsAssetsPaths.trafficOn,
+                  appPreferences.showTrafficLayers
+                      ? HdsAssetsPaths.trafficOff
+                      : HdsAssetsPaths.trafficOn,
                   color: colorScheme.primary,
                 ),
               ),
               onTap: () => setState(() {
-                appPreferences.showTrafficLayers = !appPreferences.showTrafficLayers;
-                Util.setTrafficLayersVisibilityOnMap(context, _hereMapController);
+                appPreferences.showTrafficLayers =
+                    !appPreferences.showTrafficLayers;
+                Util.setTrafficLayersVisibilityOnMap(
+                  context,
+                  _hereMapController,
+                );
               }),
             ),
           ),
@@ -514,12 +573,12 @@ class _RoutingScreenState extends State<RoutingScreen>
   }
 
   Widget _buildTransportTypeWidget(BuildContext context) => Container(
-        color: UIStyle.selectedListTileColor,
-        child: TransportModesWidget(
-          tabController: _transportModesTabController,
-          transportModes: _transportModes,
-        ),
-      );
+    color: UIStyle.selectedListTileColor,
+    child: TransportModesWidget(
+      tabController: _transportModesTabController,
+      transportModes: _transportModes,
+    ),
+  );
 
   Widget _buildBottomNavigationBar(context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -562,7 +621,9 @@ class _RoutingScreenState extends State<RoutingScreen>
                   setState(() => _poiCategories = categoryIds);
                   _routePoiHandler.categories = categoryIds.toList();
                   if (_routes.isNotEmpty) {
-                    _routePoiHandler.updatePoiForRoute(_routes[_selectedRouteIndex]);
+                    _routePoiHandler.updatePoiForRoute(
+                      _routes[_selectedRouteIndex],
+                    );
                   }
                 },
               ),
@@ -591,7 +652,10 @@ class _RoutingScreenState extends State<RoutingScreen>
                           route: route,
                           onRouteDetails: () => Navigator.of(context).pushNamed(
                             RouteDetailsScreen.navRoute,
-                            arguments: [_routes[_routesTabController.index], _wayPointsController],
+                            arguments: [
+                              _routes[_routesTabController.index],
+                              _wayPointsController,
+                            ],
                           ),
                           onNavigation: () => Navigator.of(context).pushNamed(
                             NavigationScreen.navRoute,
@@ -611,21 +675,39 @@ class _RoutingScreenState extends State<RoutingScreen>
   _beginRouting() {
     _dismissWayPointPopup();
     setState(() => _routingInProgress = true);
-    RoutePreferencesModel preferences = Provider.of<RoutePreferencesModel>(context, listen: false);
+    RoutePreferencesModel preferences = Provider.of<RoutePreferencesModel>(
+      context,
+      listen: false,
+    );
 
     switch (_transportModes[_transportModesTabController.index]) {
       case TransportModes.car:
-        _routingEngine.calculateCarRoute(_wayPointsController.value, preferences.carOptions, _onRoutingEnd);
+        _routingEngine.calculateCarRoute(
+          _wayPointsController.value,
+          preferences.carOptions,
+          _onRoutingEnd,
+        );
         break;
       case TransportModes.truck:
-        _routingEngine.calculateTruckRoute(_wayPointsController.value, preferences.truckOptions, _onRoutingEnd);
+        _routingEngine.calculateTruckRoute(
+          _wayPointsController.value,
+          preferences.truckOptions,
+          _onRoutingEnd,
+        );
         break;
       case TransportModes.scooter:
-        _routingEngine.calculateScooterRoute(_wayPointsController.value, preferences.scooterOptions, _onRoutingEnd);
+        _routingEngine.calculateScooterRoute(
+          _wayPointsController.value,
+          preferences.scooterOptions,
+          _onRoutingEnd,
+        );
         break;
       case TransportModes.walk:
         _routingEngine.calculatePedestrianRoute(
-            _wayPointsController.value, preferences.pedestrianOptions, _onRoutingEnd);
+          _wayPointsController.value,
+          preferences.pedestrianOptions,
+          _onRoutingEnd,
+        );
         break;
     }
   }
@@ -638,10 +720,7 @@ class _RoutingScreenState extends State<RoutingScreen>
     if (routes == null || routes.isEmpty) {
       _clearMapRoutes();
       _routes.clear();
-      _routesTabController = TabController(
-        length: _routes.length,
-        vsync: this,
-      );
+      _routesTabController = TabController(length: _routes.length, vsync: this);
       setState(() {
         _routingInProgress = false;
       });
@@ -658,10 +737,7 @@ class _RoutingScreenState extends State<RoutingScreen>
     }
 
     _routes = routes;
-    _routesTabController = TabController(
-      length: _routes.length,
-      vsync: this,
-    );
+    _routesTabController = TabController(length: _routes.length, vsync: this);
     _routesTabController.addListener(() => _updateSelectedRoute());
 
     _addRoutesToMap();
@@ -669,19 +745,28 @@ class _RoutingScreenState extends State<RoutingScreen>
     setState(() => _routingInProgress = false);
     _routePoiHandler.updatePoiForRoute(_routes[_selectedRouteIndex]);
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => _zoomToRoutes());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) => _zoomToRoutes(),
+    );
   }
 
   void _awaitOptionsFromPreferenceScreen(BuildContext context) async {
     final activeTransportMode = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RoutePreferencesScreen(
-            activeTransportMode: _transportModes[_transportModesTabController.index],
-          ),
-        ));
+      context,
+      MaterialPageRoute(
+        builder: (context) => RoutePreferencesScreen(
+          activeTransportMode:
+              _transportModes[_transportModesTabController.index],
+        ),
+      ),
+    );
 
-    setState(() => _transportModesTabController.index = max(_transportModes.indexOf(activeTransportMode), 0));
+    setState(
+      () => _transportModesTabController.index = max(
+        _transportModes.indexOf(activeTransportMode),
+        0,
+      ),
+    );
     _beginRouting();
   }
 }

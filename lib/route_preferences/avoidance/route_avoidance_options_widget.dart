@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,22 +33,38 @@ import 'road_features_avoidance_screen.dart';
 class RouteAvoidanceOptionsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final AvoidanceOptions avoidanceOptions =
-        context.select((RoutePreferencesModel model) => model.sharedAvoidanceOptions);
+    final AvoidanceOptions avoidanceOptions = context.select(
+      (RoutePreferencesModel model) => model.sharedAvoidanceOptions,
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        PreferencesSectionTitle(title: AppLocalizations.of(context)!.avoidanceOptionsTitle),
+        PreferencesSectionTitle(
+          title: AppLocalizations.of(context)!.avoidanceOptionsTitle,
+        ),
         PreferencesDisclosureRowWidget(
           title: AppLocalizations.of(context)!.avoidRoadFeaturesTitle,
-          subTitle: EnumStringHelper.roadFeatureNamesToString(context, avoidanceOptions.roadFeatures),
-          onPressed: () =>
-              Navigator.push(context, MaterialPageRoute(builder: (context) => RoadFeaturesAvoidanceScreen())),
+          subTitle: EnumStringHelper.roadFeatureNamesToString(
+            context,
+            avoidanceOptions.roadFeatures,
+          ),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RoadFeaturesAvoidanceScreen(),
+            ),
+          ),
         ),
         PreferencesDisclosureRowWidget(
           title: AppLocalizations.of(context)!.avoidCountriesTitle,
-          subTitle: EnumStringHelper.countryCodeNamesToString(context, avoidanceOptions.countries),
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CountryAvoidanceScreen())),
+          subTitle: EnumStringHelper.countryCodeNamesToString(
+            context,
+            avoidanceOptions.countries,
+          ),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CountryAvoidanceScreen()),
+          ),
         ),
       ],
     );

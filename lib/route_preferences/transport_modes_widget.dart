@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,7 @@ import 'package:here_sdk_reference_application_flutter/common/hds_icons/hds_icon
 
 /// Available transport modes currently supported by the Ref App.
 /// The HERE SDK supports more transport modes than featured by this application.
-enum TransportModes {
-  car,
-  truck,
-  scooter,
-  walk,
-}
+enum TransportModes { car, truck, scooter, walk }
 
 /// Widget for switching between transport modes.
 class TransportModesWidget extends StatefulWidget {
@@ -83,14 +78,12 @@ class _TransportModesWidgetState extends State<TransportModesWidget> {
 
         /// Theme color setup.
         ColorScheme colorScheme = Theme.of(context).colorScheme;
-        Color color =
-            isSelected ? colorScheme.primary : colorScheme.onSecondary;
+        Color color = isSelected
+            ? colorScheme.primary
+            : colorScheme.onSecondary;
 
         return Tab(
-          icon: HdsIconWidget(
-            widget.transportModes[index].icon,
-            color: color,
-          ),
+          icon: HdsIconWidget(widget.transportModes[index].icon, color: color),
         );
       }),
     );

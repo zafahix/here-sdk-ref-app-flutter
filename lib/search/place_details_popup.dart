@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,7 @@ import '../common/application_preferences.dart';
 import '../common/ui_style.dart';
 import '../search/search_engine_proxy.dart';
 
-enum PlaceDetailsPopupResult {
-  routeTo,
-  addToRoute,
-}
+enum PlaceDetailsPopupResult { routeTo, addToRoute }
 
 /// Displays a pop-up window with detailed info of the [place].
 Future<PlaceDetailsPopupResult?> showPlaceDetailsPopup({
@@ -44,15 +41,22 @@ Future<PlaceDetailsPopupResult?> showPlaceDetailsPopup({
   bool routeToEnabled = false,
   bool addToRouteEnabled = false,
 }) async {
-  Future<Place> placeDetailsFuture =
-      _getPlaceDetails(place, Provider.of<AppPreferences>(context, listen: false).useAppOffline);
+  Future<Place> placeDetailsFuture = _getPlaceDetails(
+    place,
+    Provider.of<AppPreferences>(context, listen: false).useAppOffline,
+  );
 
   PlaceDetailsPopupResult? result = await showDialog<PlaceDetailsPopupResult>(
     context: context,
     builder: (context) => FutureBuilder<Place>(
       initialData: place,
       future: placeDetailsFuture,
-      builder: (context, snapshot) => _createPopupFromPlace(context, snapshot.data!, routeToEnabled, addToRouteEnabled),
+      builder: (context, snapshot) => _createPopupFromPlace(
+        context,
+        snapshot.data!,
+        routeToEnabled,
+        addToRouteEnabled,
+      ),
     ),
   );
 
@@ -63,14 +67,18 @@ Future<Place> _getPlaceDetails(Place place, bool offline) async {
   final SearchEngineProxy _searchEngine = SearchEngineProxy(offline: offline);
   final Completer<Place?> completer = Completer();
 
-  _searchEngine.searchByPlaceIdWithLanguageCode(PlaceIdQuery(place.id), LanguageCode.enUs, (error, place) {
-    if (error != null) {
-      print('Search failed. Error: ${error.toString()}');
-      completer.complete();
-    }
+  _searchEngine.searchByPlaceIdWithLanguageCode(
+    PlaceIdQuery(place.id),
+    LanguageCode.enUs,
+    (error, place) {
+      if (error != null) {
+        print('Search failed. Error: ${error.toString()}');
+        completer.complete();
+      }
 
-    completer.complete(place);
-  });
+      completer.complete(place);
+    },
+  );
 
   Place? newPlace = await completer.future;
 
@@ -81,10 +89,17 @@ Future<Place> _getPlaceDetails(Place place, bool offline) async {
   return newPlace;
 }
 
-Widget _createPopupFromPlace(BuildContext context, Place place, bool routeToEnabled, bool addToRouteEnabled) {
+Widget _createPopupFromPlace(
+  BuildContext context,
+  Place place,
+  bool routeToEnabled,
+  bool addToRouteEnabled,
+) {
   return SimpleDialog(
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(UIStyle.popupsBorderRadius)),
+      borderRadius: BorderRadius.all(
+        Radius.circular(UIStyle.popupsBorderRadius),
+      ),
     ),
     titlePadding: EdgeInsets.zero,
     title: Column(
@@ -151,7 +166,9 @@ Widget _createPopupFromPlace(BuildContext context, Place place, bool routeToEnab
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   AppLocalizations.of(context)!.routeToButtonTitle,
-                  () => Navigator.of(context).pop(PlaceDetailsPopupResult.routeTo),
+                  () => Navigator.of(
+                    context,
+                  ).pop(PlaceDetailsPopupResult.routeTo),
                 ),
               ],
               if (addToRouteEnabled) ...[
@@ -163,7 +180,9 @@ Widget _createPopupFromPlace(BuildContext context, Place place, bool routeToEnab
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   AppLocalizations.of(context)!.addToRouteButton,
-                  () => Navigator.of(context).pop(PlaceDetailsPopupResult.addToRoute),
+                  () => Navigator.of(
+                    context,
+                  ).pop(PlaceDetailsPopupResult.addToRoute),
                 ),
               ],
               Spacer(),
@@ -180,17 +199,24 @@ List<Widget>? _buildPhonesList(BuildContext context, Place place) {
   }
 
   List<ListTile> phoneWidgets = [
-    ...place.details.contacts.first.landlinePhones
-        .map((phone) => _buildPhoneTile(HdsAssetsPaths.telephoneIcon, phone.phoneNumber)),
-    ...place.details.contacts.first.mobilePhones
-        .map((phone) => _buildPhoneTile(HdsAssetsPaths.smartPhone, phone.phoneNumber)),
+    ...place.details.contacts.first.landlinePhones.map(
+      (phone) =>
+          _buildPhoneTile(HdsAssetsPaths.telephoneIcon, phone.phoneNumber),
+    ),
+    ...place.details.contacts.first.mobilePhones.map(
+      (phone) => _buildPhoneTile(HdsAssetsPaths.smartPhone, phone.phoneNumber),
+    ),
   ];
 
   return _convertToExpansionTile(phoneWidgets);
 }
 
 ListTile _buildPhoneTile(String icon, String phoneNumber) {
-  return _buildInfoTile(icon, phoneNumber, () => launchUrl(Uri.parse("tel:" + phoneNumber)));
+  return _buildInfoTile(
+    icon,
+    phoneNumber,
+    () => launchUrl(Uri.parse("tel:" + phoneNumber)),
+  );
 }
 
 List<Widget>? _buildOpeningHours(Place place) {
@@ -199,8 +225,13 @@ List<Widget>? _buildOpeningHours(Place place) {
   }
 
   List<ListTile> openingHoursWidgets = [];
-  place.details.openingHours.forEach((openingHours) =>
-      openingHours.text.forEach((hour) => openingHoursWidgets.add(_buildInfoTile(HdsAssetsPaths.time, hour, null))));
+  place.details.openingHours.forEach(
+    (openingHours) => openingHours.text.forEach(
+      (hour) => openingHoursWidgets.add(
+        _buildInfoTile(HdsAssetsPaths.time, hour, null),
+      ),
+    ),
+  );
 
   return _convertToExpansionTile(openingHoursWidgets);
 }
@@ -210,12 +241,11 @@ List<Widget>? _buildURLsList(BuildContext context, Place place) {
     return null;
   }
 
-  List<ListTile> urlsWidgets = place.details.contacts.first.websites.map((site) {
+  List<ListTile> urlsWidgets = place.details.contacts.first.websites.map((
+    site,
+  ) {
     return _buildInfoTile(HdsAssetsPaths.globalIcon, site.address, () {
-      launchUrl(
-        Uri.parse(site.address),
-        mode: LaunchMode.externalApplication,
-      );
+      launchUrl(Uri.parse(site.address), mode: LaunchMode.externalApplication);
     });
   }).toList();
 
@@ -250,51 +280,50 @@ List<Widget>? _convertToExpansionTile(List<ListTile> tiles) {
   ];
 }
 
-ListTile _buildInfoTile(String icon, String text, VoidCallback? onTap) => ListTile(
+ListTile _buildInfoTile(String icon, String text, VoidCallback? onTap) =>
+    ListTile(
       leading: HdsIconWidget(icon),
-      title: Text(
-        text,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
+      title: Text(text, maxLines: 2, overflow: TextOverflow.ellipsis),
       onTap: onTap,
     );
 
-Widget _buildOptionButton(BuildContext context, Widget icon, String title, VoidCallback onPressed) =>
-    SimpleDialogOption(
-      padding: EdgeInsets.zero,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
-          onTap: onPressed,
-          child: Container(
-            height: UIStyle.bigButtonHeight,
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: UIStyle.contentMarginLarge,
-                right: UIStyle.contentMarginLarge,
+Widget _buildOptionButton(
+  BuildContext context,
+  Widget icon,
+  String title,
+  VoidCallback onPressed,
+) => SimpleDialogOption(
+  padding: EdgeInsets.zero,
+  child: Material(
+    color: Colors.transparent,
+    borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
+      onTap: onPressed,
+      child: Container(
+        height: UIStyle.bigButtonHeight,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: UIStyle.contentMarginLarge,
+            right: UIStyle.contentMarginLarge,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              icon,
+              Container(width: UIStyle.contentMarginMedium),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: UIStyle.bigFontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  icon,
-                  Container(
-                    width: UIStyle.contentMarginMedium,
-                  ),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: UIStyle.bigFontSize,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
         ),
       ),
-    );
+    ),
+  ),
+);

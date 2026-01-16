@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,13 @@ import '../route_preferences_model.dart';
 class CountryAvoidanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final AvoidanceOptions avoidanceOptions =
-        context.select((RoutePreferencesModel model) => model.sharedAvoidanceOptions);
+    final AvoidanceOptions avoidanceOptions = context.select(
+      (RoutePreferencesModel model) => model.sharedAvoidanceOptions,
+    );
 
-    Map<String, CountryCode> countryCodesMap = EnumStringHelper.countryCodesMap(context);
+    Map<String, CountryCode> countryCodesMap = EnumStringHelper.countryCodesMap(
+      context,
+    );
     List<String> sortedCountryNames = countryCodesMap.keys.toList()..sort();
 
     return Scaffold(
@@ -45,30 +48,35 @@ class CountryAvoidanceScreen extends StatelessWidget {
       body: Container(
         color: UIStyle.preferencesBackgroundColor,
         child: ListView.builder(
-            itemCount: sortedCountryNames.length,
-            itemBuilder: (context, index) {
-              CountryCode code = countryCodesMap[sortedCountryNames[index]]!;
-              return CheckboxListTile(
-                title: Text(sortedCountryNames[index]),
-                value: avoidanceOptions.countries.contains(code),
-                onChanged: (bool? enable) {
-                  List<CountryCode> updatedCountries = List.from(avoidanceOptions.countries);
-                  if (enable ?? false) {
-                    updatedCountries.add(code);
-                  } else {
-                    updatedCountries.remove(code);
-                  }
+          itemCount: sortedCountryNames.length,
+          itemBuilder: (context, index) {
+            CountryCode code = countryCodesMap[sortedCountryNames[index]]!;
+            return CheckboxListTile(
+              title: Text(sortedCountryNames[index]),
+              value: avoidanceOptions.countries.contains(code),
+              onChanged: (bool? enable) {
+                List<CountryCode> updatedCountries = List.from(
+                  avoidanceOptions.countries,
+                );
+                if (enable ?? false) {
+                  updatedCountries.add(code);
+                } else {
+                  updatedCountries.remove(code);
+                }
 
-                  final AvoidanceOptions newOptions = AvoidanceOptions()
-                    ..roadFeatures = avoidanceOptions.roadFeatures
-                    ..countries = updatedCountries
-                    ..avoidBoundingBoxAreasOptions = avoidanceOptions.avoidBoundingBoxAreasOptions
-                    ..zoneCategories = avoidanceOptions.zoneCategories
-                    ..segments = avoidanceOptions.segments;
-                  context.read<RoutePreferencesModel>().sharedAvoidanceOptions = newOptions;
-                },
-              );
-            }),
+                final AvoidanceOptions newOptions = AvoidanceOptions()
+                  ..roadFeatures = avoidanceOptions.roadFeatures
+                  ..countries = updatedCountries
+                  ..avoidBoundingBoxAreasOptions =
+                      avoidanceOptions.avoidBoundingBoxAreasOptions
+                  ..zoneCategories = avoidanceOptions.zoneCategories
+                  ..segments = avoidanceOptions.segments;
+                context.read<RoutePreferencesModel>().sharedAvoidanceOptions =
+                    newOptions;
+              },
+            );
+          },
+        ),
       ),
     );
   }

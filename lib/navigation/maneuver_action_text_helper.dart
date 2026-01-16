@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,18 +44,35 @@ extension ManeuverActionHelper on Maneuver {
       case ManeuverAction.arrive:
         return localizations.arriveActionText;
       case ManeuverAction.continueOn:
-        return _makeActionString(localizations.continueOnActionText, localizations.continueOnActionRoadText, roadName);
+        return _makeActionString(
+          localizations.continueOnActionText,
+          localizations.continueOnActionRoadText,
+          roadName,
+        );
       case ManeuverAction.depart:
-        return _makeActionString(localizations.departActionText, localizations.departActionRoadText, roadName);
+        return _makeActionString(
+          localizations.departActionText,
+          localizations.departActionRoadText,
+          roadName,
+        );
       case ManeuverAction.leftExit:
         return _makeActionString(
-            localizations.leftExitActionText, localizations.leftExitActionNextRoadText, nextRoadName);
+          localizations.leftExitActionText,
+          localizations.leftExitActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.leftFork:
         return _makeActionString(
-            localizations.leftForkActionText, localizations.leftForkActionNextRoadText, nextRoadName);
+          localizations.leftForkActionText,
+          localizations.leftForkActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.leftRamp:
         return _makeActionString(
-            localizations.leftRampActionText, localizations.leftRampActionNextRoadText, nextRoadName);
+          localizations.leftRampActionText,
+          localizations.leftRampActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.leftRoundaboutEnter:
         return localizations.leftRoundaboutEnterActionText;
       case ManeuverAction.leftRoundaboutExit1:
@@ -86,22 +103,40 @@ extension ManeuverActionHelper on Maneuver {
         return localizations.leftRoundaboutPassActionText;
       case ManeuverAction.leftTurn:
         return _makeActionString(
-            localizations.leftTurnActionText, localizations.leftTurnActionNextRoadText, nextRoadName);
+          localizations.leftTurnActionText,
+          localizations.leftTurnActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.leftUTurn:
         return _makeActionString(
-            localizations.leftUTurnActionText, localizations.leftUTurnActionNextRoadText, nextRoadName);
+          localizations.leftUTurnActionText,
+          localizations.leftUTurnActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.middleFork:
         return _makeActionString(
-            localizations.middleForkActionText, localizations.middleForkActionNextRoadText, nextRoadName);
+          localizations.middleForkActionText,
+          localizations.middleForkActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.rightExit:
         return _makeActionString(
-            localizations.rightExitActionText, localizations.rightExitActionNextRoadText, nextRoadName);
+          localizations.rightExitActionText,
+          localizations.rightExitActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.rightFork:
         return _makeActionString(
-            localizations.rightForkActionText, localizations.rightForkActionNextRoadText, nextRoadName);
+          localizations.rightForkActionText,
+          localizations.rightForkActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.rightRamp:
         return _makeActionString(
-            localizations.rightRampActionText, localizations.rightRampActionNextRoadText, nextRoadName);
+          localizations.rightRampActionText,
+          localizations.rightRampActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.rightRoundaboutEnter:
         return localizations.rightRoundaboutEnterActionText;
       case ManeuverAction.rightRoundaboutExit1:
@@ -132,22 +167,40 @@ extension ManeuverActionHelper on Maneuver {
         return localizations.rightRoundaboutPassActionText;
       case ManeuverAction.rightTurn:
         return _makeActionString(
-            localizations.rightTurnActionText, localizations.rightTurnActionNextRoadText, nextRoadName);
+          localizations.rightTurnActionText,
+          localizations.rightTurnActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.rightUTurn:
         return _makeActionString(
-            localizations.rightUTurnActionText, localizations.rightUTurnActionNextRoadText, nextRoadName);
+          localizations.rightUTurnActionText,
+          localizations.rightUTurnActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.sharpLeftTurn:
         return _makeActionString(
-            localizations.sharpLeftTurnActionText, localizations.sharpLeftTurnActionNextRoadText, nextRoadName);
+          localizations.sharpLeftTurnActionText,
+          localizations.sharpLeftTurnActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.sharpRightTurn:
         return _makeActionString(
-            localizations.sharpRightTurnActionText, localizations.sharpRightTurnActionNextRoadText, nextRoadName);
+          localizations.sharpRightTurnActionText,
+          localizations.sharpRightTurnActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.slightLeftTurn:
         return _makeActionString(
-            localizations.slightLeftTurnActionText, localizations.slightLeftTurnActionNextRoadText, nextRoadName);
+          localizations.slightLeftTurnActionText,
+          localizations.slightLeftTurnActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.slightRightTurn:
         return _makeActionString(
-            localizations.slightRightTurnActionText, localizations.slightRightTurnActionNextRoadText, nextRoadName);
+          localizations.slightRightTurnActionText,
+          localizations.slightRightTurnActionNextRoadText,
+          nextRoadName,
+        );
       case ManeuverAction.enterHighwayFromLeft:
         return localizations.enterHighwayFromLeftActionText;
       case ManeuverAction.enterHighwayFromRight:

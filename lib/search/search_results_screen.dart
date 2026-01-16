@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,8 @@ class SearchResultsScreen extends StatefulWidget {
   _SearchResultsScreenState createState() => _SearchResultsScreenState();
 }
 
-class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerProviderStateMixin, Positioning {
+class _SearchResultsScreenState extends State<SearchResultsScreen>
+    with TickerProviderStateMixin, Positioning {
   static const double _kZoomDistanceToEarth = 1000; // meters
   static const double _kTapRadius = 6; // pixels
   static const double _kPlaceCardHeight = 80;
@@ -81,10 +82,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
 
   @override
   void initState() {
-    _tabController = TabController(
-      length: widget.places.length,
-      vsync: this,
-    );
+    _tabController = TabController(length: widget.places.length, vsync: this);
     _tabController.addListener(() => _updateSelectedPlace());
     enableMapUpdate = false;
     super.initState();
@@ -98,14 +96,17 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
 
   @override
   Widget build(BuildContext context) {
-    final HereMapOptions options = HereMapOptions()..initialBackgroundColor = Theme.of(context).colorScheme.surface;
+    final HereMapOptions options = HereMapOptions()
+      ..initialBackgroundColor = Theme.of(context).colorScheme.surface;
     return DefaultTabController(
       length: widget.places.length,
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, _) {
           if (!didPop) {
-            Navigator.of(context).pop(_hereMapController.camera.state.targetCoordinates);
+            Navigator.of(
+              context,
+            ).pop(_hereMapController.camera.state.targetCoordinates);
           }
         },
         child: Scaffold(
@@ -119,9 +120,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
           extendBodyBehindAppBar: true,
           floatingActionButton: enableMapUpdate
               ? null
-              : ResetLocationButton(
-                  onPressed: _resetCurrentPosition,
-                ),
+              : ResetLocationButton(onPressed: _resetCurrentPosition),
         ),
       ),
     );
@@ -130,7 +129,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
   void _onMapCreated(HereMapController hereMapController) {
     _hereMapController = hereMapController;
 
-    CustomMapStyleSettings customMapStyleSettings = Provider.of<CustomMapStyleSettings>(context, listen: false);
+    CustomMapStyleSettings customMapStyleSettings =
+        Provider.of<CustomMapStyleSettings>(context, listen: false);
 
     MapSceneLoadSceneCallback mapSceneLoadSceneCallback = (MapError? error) {
       if (error != null) {
@@ -149,23 +149,32 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
       hereMapController.camera.lookAtPointWithGeoOrientationAndMeasure(
         widget.currentPosition,
         GeoOrientationUpdate(double.nan, double.nan),
-        MapMeasure(MapMeasureKind.distanceInMeters, Positioning.initDistanceToEarth),
+        MapMeasure(
+          MapMeasureKind.distanceInMeters,
+          Positioning.initDistanceToEarth,
+        ),
       );
       _addPanListener();
       _createResultsMarkers();
       _setTapGestureHandler();
 
-      initPositioning(
-        context: context,
-        hereMapController: hereMapController,
-      );
+      initPositioning(context: context, hereMapController: hereMapController);
     };
 
-    Util.loadMapScene(customMapStyleSettings, hereMapController, mapSceneLoadSceneCallback);
+    Util.loadMapScene(
+      customMapStyleSettings,
+      hereMapController,
+      mapSceneLoadSceneCallback,
+    );
   }
 
   void _addPanListener() {
-    _hereMapController.gestures.panListener = PanListener((state, origin, translation, velocity) {
+    _hereMapController.gestures.panListener = PanListener((
+      state,
+      origin,
+      translation,
+      velocity,
+    ) {
       if (enableMapUpdate) {
         setState(() => enableMapUpdate = false);
       }
@@ -173,23 +182,32 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
   }
 
   void _resetCurrentPosition() {
-    GeoCoordinates coordinates = lastKnownLocation != null ? lastKnownLocation!.coordinates : widget.currentPosition;
+    GeoCoordinates coordinates = lastKnownLocation != null
+        ? lastKnownLocation!.coordinates
+        : widget.currentPosition;
 
     _hereMapController.camera.lookAtPointWithGeoOrientationAndMeasure(
       coordinates,
       GeoOrientationUpdate(double.nan, double.nan),
-      MapMeasure(MapMeasureKind.distanceInMeters, Positioning.initDistanceToEarth),
+      MapMeasure(
+        MapMeasureKind.distanceInMeters,
+        Positioning.initDistanceToEarth,
+      ),
     );
     setState(() => enableMapUpdate = true);
   }
 
   void _setTapGestureHandler() {
-    _hereMapController.gestures.tapListener = TapListener((Point2D touchPoint) => _pickMapMarker(touchPoint));
+    _hereMapController.gestures.tapListener = TapListener(
+      (Point2D touchPoint) => _pickMapMarker(touchPoint),
+    );
   }
 
   void _pickMapMarker(Point2D touchPoint) {
     _hereMapController.pick(
-      MapSceneMapPickFilter(<MapSceneMapPickFilterContentType>[MapSceneMapPickFilterContentType.mapItems]),
+      MapSceneMapPickFilter(<MapSceneMapPickFilterContentType>[
+        MapSceneMapPickFilterContentType.mapItems,
+      ]),
       Rectangle2D(touchPoint, Size2D(_kTapRadius, _kTapRadius)),
       (MapPickResult? result) {
         List<MapMarker>? mapMarkerList = result?.mapItems?.markers;
@@ -231,10 +249,18 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
   void _createResultsMarkers() {
     assert(widget.places.isNotEmpty);
 
-    int markerSize = (_hereMapController.pixelScale * UIStyle.searchMarkerSize).truncate();
-    _smallMarkerImage = MapImage.withFilePathAndWidthAndHeight("assets/map_marker.svg", markerSize, markerSize);
-    _bigMarkerImage =
-        MapImage.withFilePathAndWidthAndHeight("assets/map_marker_big.svg", markerSize * 2, markerSize * 2);
+    int markerSize = (_hereMapController.pixelScale * UIStyle.searchMarkerSize)
+        .truncate();
+    _smallMarkerImage = MapImage.withFilePathAndWidthAndHeight(
+      "assets/map_marker.svg",
+      markerSize,
+      markerSize,
+    );
+    _bigMarkerImage = MapImage.withFilePathAndWidthAndHeight(
+      "assets/map_marker_big.svg",
+      markerSize * 2,
+      markerSize * 2,
+    );
     _markers = <MapMarker>[];
 
     for (int i = 0; i < widget.places.length; ++i) {
@@ -253,19 +279,30 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
     if (widget.places.length == 1) {
       _hereMapController.camera.lookAtPointWithMeasure(
         widget.places.first.geoCoordinates!,
-        MapMeasure(MapMeasureKind.distanceInMeters, Positioning.initDistanceToEarth),
+        MapMeasure(
+          MapMeasureKind.distanceInMeters,
+          Positioning.initDistanceToEarth,
+        ),
       );
     } else {
-      GeoBox? geoBox = GeoBox.containingGeoCoordinates(widget.places.map((e) => e.geoCoordinates!).toList());
+      GeoBox? geoBox = GeoBox.containingGeoCoordinates(
+        widget.places.map((e) => e.geoCoordinates!).toList(),
+      );
 
       if (geoBox != null && _bottomBarKey.currentContext != null) {
-        final RenderBox bottomBarBox = _bottomBarKey.currentContext!.findRenderObject() as RenderBox;
+        final RenderBox bottomBarBox =
+            _bottomBarKey.currentContext!.findRenderObject() as RenderBox;
         final double topOffset = MediaQuery.of(context).padding.top;
 
         _hereMapController.zoomGeoBoxToLogicalViewPort(
-            geoBox: geoBox,
-            viewPort: Rect.fromLTRB(
-                0, topOffset, bottomBarBox.size.width, MediaQuery.of(context).size.height - bottomBarBox.size.height));
+          geoBox: geoBox,
+          viewPort: Rect.fromLTRB(
+            0,
+            topOffset,
+            bottomBarBox.size.width,
+            MediaQuery.of(context).size.height - bottomBarBox.size.height,
+          ),
+        );
       }
     }
   }
@@ -280,11 +317,13 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
         child: TabBarView(
           controller: _tabController,
           children: widget.places
-              .map((place) => Card(
-                    elevation: 2,
-                    key: UniqueKey(),
-                    child: _buildPlaceTile(context, place, null),
-                  ))
+              .map(
+                (place) => Card(
+                  elevation: 2,
+                  key: UniqueKey(),
+                  child: _buildPlaceTile(context, place, null),
+                ),
+              )
               .toList(),
         ),
       ),
@@ -296,7 +335,9 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
       children: [
         IconButton(
           icon: HdsIconWidget(HdsAssetsPaths.arrowLeftIcon),
-          onPressed: () => Navigator.of(context).pop(_hereMapController.camera.state.targetCoordinates),
+          onPressed: () => Navigator.of(
+            context,
+          ).pop(_hereMapController.camera.state.targetCoordinates),
         ),
         Expanded(
           child: Text(
@@ -312,7 +353,9 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
             icon: HdsIconWidget.medium(
               expanded ? HdsAssetsPaths.chevronDown : HdsAssetsPaths.chevronUp,
             ),
-            onPressed: expanded ? () => Navigator.of(context).pop() : () => _showResultsList(context),
+            onPressed: expanded
+                ? () => Navigator.of(context).pop()
+                : () => _showResultsList(context),
           ),
       ],
     );
@@ -340,12 +383,17 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
       decoration: BoxDecoration(
         border: Border(
           left: BorderSide(
-              color: _selectedIndex == index ? colorScheme.secondary : Colors.transparent,
-              width: UIStyle.contentMarginExtraSmall),
+            color: _selectedIndex == index
+                ? colorScheme.secondary
+                : Colors.transparent,
+            width: UIStyle.contentMarginExtraSmall,
+          ),
         ),
       ),
       child: ListTile(
-        tileColor: _selectedIndex == index ? UIStyle.selectedListTileColor : null,
+        tileColor: _selectedIndex == index
+            ? UIStyle.selectedListTileColor
+            : null,
         title: Text(
           place.title,
           style: TextStyle(fontSize: UIStyle.hugeFontSize),
@@ -439,10 +487,12 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerPr
                   (context, index) {
                     final int itemIndex = index ~/ 2;
                     return index.isEven
-                        ? _buildPlaceTile(context, widget.places[itemIndex], itemIndex)
-                        : Divider(
-                            height: 1,
-                          );
+                        ? _buildPlaceTile(
+                            context,
+                            widget.places[itemIndex],
+                            itemIndex,
+                          )
+                        : Divider(height: 1);
                   },
                   semanticIndexCallback: (Widget widget, int localIndex) {
                     if (localIndex.isEven) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,7 @@ class _PoiSettingInfo {
   final String categoryId;
   final String image;
 
-  _PoiSettingInfo({
-    required this.categoryId,
-    required this.image,
-  });
+  _PoiSettingInfo({required this.categoryId, required this.image});
 
   String getTitle(BuildContext context) {
     AppLocalizations appLocalizations = AppLocalizations.of(context)!;
@@ -75,10 +72,7 @@ class RoutePoiOptionsButton extends StatelessWidget {
   final ValueChanged<Set<String>> onChanged;
 
   /// Constructs a widget.
-  RoutePoiOptionsButton({
-    this.categoryIds = const {},
-    required this.onChanged,
-  });
+  RoutePoiOptionsButton({this.categoryIds = const {}, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -92,15 +86,17 @@ class RoutePoiOptionsButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: _poiSettings
-              .map((poiInfo) => Padding(
-                    padding: EdgeInsets.only(
-                      right: UIStyle.contentMarginMedium,
-                    ),
-                    child: HdsIconWidget.medium(
-                      poiInfo.image,
-                      color: categoryIds.contains(poiInfo.categoryId) ? null : UIStyle.foregroundInactive,
-                    ),
-                  ))
+              .map(
+                (poiInfo) => Padding(
+                  padding: EdgeInsets.only(right: UIStyle.contentMarginMedium),
+                  child: HdsIconWidget.medium(
+                    poiInfo.image,
+                    color: categoryIds.contains(poiInfo.categoryId)
+                        ? null
+                        : UIStyle.foregroundInactive,
+                  ),
+                ),
+              )
               .toList(),
         ),
       ),
@@ -142,25 +138,26 @@ class RoutePoiOptionsButton extends StatelessWidget {
               ],
             ),
             ..._poiSettings
-                .map((poiInfo) => RoutePoiOptionsItem(
-                      value: categories.contains(poiInfo.categoryId),
-                      title: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          HdsIconWidget(
-                            poiInfo.image,
-                            color: colorScheme.primary,
-                          ),
-                          Container(
-                            width: UIStyle.contentMarginLarge,
-                          ),
-                          Text(poiInfo.getTitle(context)),
-                        ],
-                      ),
-                      onChanged: (value) =>
-                          value ? categories.add(poiInfo.categoryId) : categories.remove(poiInfo.categoryId),
-                    ))
-                .toList()
+                .map(
+                  (poiInfo) => RoutePoiOptionsItem(
+                    value: categories.contains(poiInfo.categoryId),
+                    title: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        HdsIconWidget(
+                          poiInfo.image,
+                          color: colorScheme.primary,
+                        ),
+                        Container(width: UIStyle.contentMarginLarge),
+                        Text(poiInfo.getTitle(context)),
+                      ],
+                    ),
+                    onChanged: (value) => value
+                        ? categories.add(poiInfo.categoryId)
+                        : categories.remove(poiInfo.categoryId),
+                  ),
+                )
+                .toList(),
           ],
         ),
       ),

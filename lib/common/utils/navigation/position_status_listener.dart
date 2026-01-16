@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,9 @@ class DeviceLocationServicesStatusNotifier {
     // Stop the previous status stream, if there is any.
     stop();
     _listener = listener;
-    _serviceStatusSteam = Geolocator.getServiceStatusStream().listen(_serviceListener);
+    _serviceStatusSteam = Geolocator.getServiceStatusStream().listen(
+      _serviceListener,
+    );
   }
 
   /// Stops the location services status listener and no longer notifies about status change.
@@ -55,11 +57,13 @@ class DeviceLocationServicesStatusNotifier {
 
   Future<bool> _hasLocationPermissions() async {
     final LocationPermission permission = await Geolocator.checkPermission();
-    return permission == LocationPermission.always || permission == LocationPermission.whileInUse;
+    return permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
   }
 
   Future<bool> canLocateUserPositioning() async {
-    return (await _hasLocationPermissions()) && await Geolocator.isLocationServiceEnabled();
+    return (await _hasLocationPermissions()) &&
+        await Geolocator.isLocationServiceEnabled();
   }
 
   Future<void> _serviceListener(ServiceStatus event) async {

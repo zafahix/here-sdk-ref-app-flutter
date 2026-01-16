@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class RoutePoiHandler {
     ..languageCode = LanguageCode.enUs
     ..maxItems = _kMaxSearchSuggestion
     // Enables well-distributed results along the route for corridor area searches.
-    ..distributedResults = true; 
+    ..distributedResults = true;
 
   /// [HereMapController] of the map.
   final HereMapController hereMapController;
@@ -140,10 +140,15 @@ class RoutePoiHandler {
   }
 
   Future<List<Place>?> _searchForVertices(List<GeoCoordinates> vertices) async {
-    List<PlaceCategory> categories = _categories.map((categoryId) => PlaceCategory(categoryId)).toList();
+    List<PlaceCategory> categories = _categories
+        .map((categoryId) => PlaceCategory(categoryId))
+        .toList();
     CategoryQuery categoryQuery = CategoryQuery.withCategoriesInArea(
       categories,
-      CategoryQueryArea.withCorridorAndCenter(GeoCorridor(vertices, _kGeoCorridorRadius), vertices.first),
+      CategoryQueryArea.withCorridorAndCenter(
+        GeoCorridor(vertices, _kGeoCorridorRadius),
+        vertices.first,
+      ),
     );
 
     return _searchPois(categoryQuery).onError((SearchError? error, stackTrace) {
@@ -154,23 +159,32 @@ class RoutePoiHandler {
 
   Future<List<Place>?> _searchPois(CategoryQuery categoryQuery) {
     final Completer<List<Place>?> completer = new Completer();
-    _poiSearchTask = _searchEngine.searchByCategory(categoryQuery, _searchOptions, (error, places) {
-      if (error != null) {
-        return completer.completeError(error);
-      }
-      return completer.complete(places);
-    });
+    _poiSearchTask = _searchEngine.searchByCategory(
+      categoryQuery,
+      _searchOptions,
+      (error, places) {
+        if (error != null) {
+          return completer.completeError(error);
+        }
+        return completer.complete(places);
+      },
+    );
     return completer.future;
   }
 
   List<Place> _filterPlaces(List<Place> places) {
-    final Set<String> wayPointsPlacesIds =
-        wayPointsController.value.where((wp) => wp.place != null).map((wp) => wp.place!.id).toSet();
-    return places.whereNot((place) => wayPointsPlacesIds.contains(place.id)).toList();
+    final Set<String> wayPointsPlacesIds = wayPointsController.value
+        .where((wp) => wp.place != null)
+        .map((wp) => wp.place!.id)
+        .toSet();
+    return places
+        .whereNot((place) => wayPointsPlacesIds.contains(place.id))
+        .toList();
   }
 
   void _addMarkersForPlaces(List<Place> places) {
-    int markerSize = (hereMapController.pixelScale * UIStyle.poiMarkerSize).round();
+    int markerSize = (hereMapController.pixelScale * UIStyle.poiMarkerSize)
+        .round();
 
     _filterPlaces(places).forEach((place) {
       SvgInfo svgInfo = PoiSVGHelper.getPoiSvgForCategoryAndText(
@@ -178,8 +192,12 @@ class RoutePoiHandler {
         text: onGetText?.call(place),
       );
 
-      MapImage mapImage = MapImage.withImageDataImageFormatWidthAndHeight(Uint8List.fromList(svgInfo.svg.codeUnits),
-          ImageFormat.svg, (svgInfo.width * (markerSize / svgInfo.height)).truncate(), markerSize);
+      MapImage mapImage = MapImage.withImageDataImageFormatWidthAndHeight(
+        Uint8List.fromList(svgInfo.svg.codeUnits),
+        ImageFormat.svg,
+        (svgInfo.width * (markerSize / svgInfo.height)).truncate(),
+        markerSize,
+      );
 
       MapMarker mapMarker = Util.createMarkerWithImage(
         place.geoCoordinates!,

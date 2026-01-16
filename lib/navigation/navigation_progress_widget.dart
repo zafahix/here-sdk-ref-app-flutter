@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,8 @@ class NavigationProgress extends StatelessWidget {
     DateTime dtArrival = dt.add(Duration(seconds: remainingDurationInSeconds));
 
     int remainingHours = (remainingDurationInSeconds / 3600).truncate();
-    int remainingMinutes = ((remainingDurationInSeconds - remainingHours * 3600) / 60).truncate();
+    int remainingMinutes =
+        ((remainingDurationInSeconds - remainingHours * 3600) / 60).truncate();
 
     String remainingDistanceUnits = appLocalizations.kilometerAbbreviationText;
     int remainingDistance = (remainingDistanceInMeters / 1000).truncate();
@@ -73,9 +74,7 @@ class NavigationProgress extends StatelessWidget {
                   children: [
                     Text(
                       DateFormat.Hm().format(dtArrival),
-                      style: TextStyle(
-                        fontSize: UIStyle.extraHugeFontSize,
-                      ),
+                      style: TextStyle(fontSize: UIStyle.extraHugeFontSize),
                     ),
                     Text(
                       appLocalizations.arrivalTitle,
@@ -86,16 +85,12 @@ class NavigationProgress extends StatelessWidget {
                     ),
                   ],
                 ),
-                Container(
-                  width: UIStyle.contentMarginHuge,
-                ),
+                Container(width: UIStyle.contentMarginHuge),
                 Column(
                   children: [
                     Text(
                       remainingHours.toString(),
-                      style: TextStyle(
-                        fontSize: UIStyle.extraHugeFontSize,
-                      ),
+                      style: TextStyle(fontSize: UIStyle.extraHugeFontSize),
                     ),
                     Text(
                       appLocalizations.hourAbbreviationText,
@@ -106,16 +101,12 @@ class NavigationProgress extends StatelessWidget {
                     ),
                   ],
                 ),
-                Container(
-                  width: UIStyle.contentMarginLarge,
-                ),
+                Container(width: UIStyle.contentMarginLarge),
                 Column(
                   children: [
                     Text(
                       remainingMinutes.toString(),
-                      style: TextStyle(
-                        fontSize: UIStyle.extraHugeFontSize,
-                      ),
+                      style: TextStyle(fontSize: UIStyle.extraHugeFontSize),
                     ),
                     Text(
                       appLocalizations.minuteAbbreviationText,
@@ -126,16 +117,12 @@ class NavigationProgress extends StatelessWidget {
                     ),
                   ],
                 ),
-                Container(
-                  width: UIStyle.contentMarginHuge,
-                ),
+                Container(width: UIStyle.contentMarginHuge),
                 Column(
                   children: [
                     Text(
                       remainingDistance.toString(),
-                      style: TextStyle(
-                        fontSize: UIStyle.extraHugeFontSize,
-                      ),
+                      style: TextStyle(fontSize: UIStyle.extraHugeFontSize),
                     ),
                     Text(
                       remainingDistanceUnits.toString(),

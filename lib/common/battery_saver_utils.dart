@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ import 'package:flutter/services.dart';
 import 'package:here_sdk_reference_application_flutter/common/util.dart';
 import 'package:here_sdk_reference_application_flutter/l10n/generated/app_localizations.dart';
 
-const String _methodChannelName = 'com.example.RefApp/foreground_service_channel';
+const String _methodChannelName =
+    'com.example.RefApp/foreground_service_channel';
 const String _methodChannelMethodName = 'openBatterySaverSettings';
 const String _methodChannelMethodArgument = 'battery_saver';
 
@@ -36,7 +37,10 @@ bool _isDialogInView = false;
 /// Opens device battery_saver settings
 Future<void> openBatterySaverSetting() async {
   const MethodChannel channel = MethodChannel(_methodChannelName);
-  await channel.invokeMethod<void>(_methodChannelMethodName, _methodChannelMethodArgument);
+  await channel.invokeMethod<void>(
+    _methodChannelMethodName,
+    _methodChannelMethodArgument,
+  );
 }
 
 /// Opens Android device battery_saver settings

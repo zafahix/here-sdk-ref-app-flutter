@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 HERE Europe B.V.
+ * Copyright (C) 2025-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,16 +45,21 @@ class CustomCatalogConfigurationScreen extends StatefulWidget {
   static const String navRoute = "/custom_catalog_configuration_screen";
 
   @override
-  State<CustomCatalogConfigurationScreen> createState() => _CustomCatalogConfigurationScreenState();
+  State<CustomCatalogConfigurationScreen> createState() =>
+      _CustomCatalogConfigurationScreenState();
 }
 
-class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigurationScreen> {
+class _CustomCatalogConfigurationScreenState
+    extends State<CustomCatalogConfigurationScreen> {
   bool _showProgressIndicator = false;
   late List<CatalogConfigurationData> _catalogConfigurations;
   final TextEditingController _catalogHrnController = TextEditingController();
-  final TextEditingController _catalogVersionHintController = TextEditingController();
-  final TextEditingController _catalogPatchHrnController = TextEditingController();
-  final TextEditingController _catalogExpirationTimeController = TextEditingController();
+  final TextEditingController _catalogVersionHintController =
+      TextEditingController();
+  final TextEditingController _catalogPatchHrnController =
+      TextEditingController();
+  final TextEditingController _catalogExpirationTimeController =
+      TextEditingController();
   bool _ignoreCachedData = false;
   bool _catalogAllowDownload = true;
   bool _isCatalogHrnAddButtonEnabled = false;
@@ -65,7 +70,8 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
   void initState() {
     super.initState();
     _catalogConfigurations =
-        context.read<AppPreferences>().loadSdkOptionsCatalogConfiguration() ?? <CatalogConfigurationData>[];
+        context.read<AppPreferences>().loadSdkOptionsCatalogConfiguration() ??
+        <CatalogConfigurationData>[];
   }
 
   @override
@@ -78,7 +84,10 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
   }
 
   void _toggleCatalogHrnAddButtonState() {
-    setState(() => _isCatalogHrnAddButtonEnabled = _catalogHrnController.text.isNotEmpty);
+    setState(
+      () =>
+          _isCatalogHrnAddButtonEnabled = _catalogHrnController.text.isNotEmpty,
+    );
   }
 
   void _resetInputFields() {
@@ -98,11 +107,15 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
   }
 
   void _onDeleteConfiguration(CatalogConfigurationData configurationData) {
-    _recreateEngineWithCatalogs(_catalogConfigurations.toList()..remove(configurationData));
+    _recreateEngineWithCatalogs(
+      _catalogConfigurations.toList()..remove(configurationData),
+    );
   }
 
   void _onAddCatalogConfig() async {
-    final String? patchHrn = _catalogPatchHrnController.text.isEmpty ? null : _catalogPatchHrnController.text;
+    final String? patchHrn = _catalogPatchHrnController.text.isEmpty
+        ? null
+        : _catalogPatchHrnController.text;
     CatalogConfigurationData configurationData = CatalogConfigurationData(
       _catalogHrnController.text,
       int.tryParse(_catalogVersionHintController.text),
@@ -114,8 +127,11 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
     if (_catalogConfigurations.contains(configurationData)) {
       _showErrorMessage(AppLocalizations.of(context)!.catalogErrorMessage);
     } else {
-      _hasAttemptedRecovery = false; // Reset recovery attempt flag for new addition
-      _recreateEngineWithCatalogs(_catalogConfigurations.toList()..add(configurationData));
+      _hasAttemptedRecovery =
+          false; // Reset recovery attempt flag for new addition
+      _recreateEngineWithCatalogs(
+        _catalogConfigurations.toList()..add(configurationData),
+      );
     }
   }
 
@@ -129,8 +145,10 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
   }) async {
     _setProgressIndicator(true);
     try {
-      SDKOptions options = sdkOptions ?? SDKNativeEngine.sharedInstance!.options;
-      options.catalogConfigurations = catalogConfigurations.toSdkCatalogConfigurations();
+      SDKOptions options =
+          sdkOptions ?? SDKNativeEngine.sharedInstance!.options;
+      options.catalogConfigurations = catalogConfigurations
+          .toSdkCatalogConfigurations();
 
       await createSDKNativeEngine(
         sdkOptions: options,
@@ -144,7 +162,9 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
   }
 
   /// Handles successful SDK engine recreation: re-initializes map loader, updates UI and saves configurations.
-  Future<void> _onSuccess(List<CatalogConfigurationData> catalogConfigurations) async {
+  Future<void> _onSuccess(
+    List<CatalogConfigurationData> catalogConfigurations,
+  ) async {
     if (mounted) {
       await context.read<MapLoaderController>().restartMapLoader();
     }
@@ -174,7 +194,10 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
       try {
         _recreateEngineWithCatalogs(
           sdkOptions: SDKOptions.withAuthenticationMode(
-            AuthenticationMode.withKeySecret(Environment.accessKeyId, Environment.accessKeySecret),
+            AuthenticationMode.withKeySecret(
+              Environment.accessKeyId,
+              Environment.accessKeySecret,
+            ),
           ),
           _catalogConfigurations.toList(),
         );
@@ -198,8 +221,12 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
     setState(() => _showProgressIndicator = value);
   }
 
-  void _saveCatalogConfigurations(List<CatalogConfigurationData>? configurations) {
-    context.read<AppPreferences>().saveSdkOptionsCatalogConfiguration(configurations);
+  void _saveCatalogConfigurations(
+    List<CatalogConfigurationData>? configurations,
+  ) {
+    context.read<AppPreferences>().saveSdkOptionsCatalogConfiguration(
+      configurations,
+    );
   }
 
   /// Navigates to InitErrorScreen and removes all previous routes from the stack.
@@ -247,7 +274,9 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
                             decoration: InputDecoration(
                               hintText: localized.hrnAsStringHint,
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: UIStyle.contentMarginMedium),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: UIStyle.contentMarginMedium,
+                              ),
                             ),
                             controller: _catalogHrnController,
                             onChanged: (_) => _toggleCatalogHrnAddButtonState(),
@@ -260,10 +289,14 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
                             decoration: InputDecoration(
                               hintText: localized.versionHintAsLong,
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: UIStyle.contentMarginMedium),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: UIStyle.contentMarginMedium,
+                              ),
                             ),
                             controller: _catalogVersionHintController,
-                            keyboardType: const TextInputType.numberWithOptions(signed: true),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              signed: true,
+                            ),
                           ),
                         ),
                         PreferencesRowTitle(title: localized.patchHrn),
@@ -274,30 +307,41 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
                             decoration: InputDecoration(
                               hintText: localized.patchHrnHint,
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: UIStyle.contentMarginMedium),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: UIStyle.contentMarginMedium,
+                              ),
                             ),
                           ),
                         ),
-                        PreferencesRowTitle(title: localized.cacheExpirationPeriod),
+                        PreferencesRowTitle(
+                          title: localized.cacheExpirationPeriod,
+                        ),
                         Container(
                           decoration: UIStyle.roundedRectDecoration(),
                           child: TextFormField(
                             decoration: InputDecoration(
                               hintText: localized.cacheExpirationPeriodHint,
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: UIStyle.contentMarginMedium),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: UIStyle.contentMarginMedium,
+                              ),
                             ),
                             controller: _catalogExpirationTimeController,
-                            keyboardType: const TextInputType.numberWithOptions(signed: true),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              signed: true,
+                            ),
                           ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            PreferencesRowTitle(title: localized.ignoreCachedData),
+                            PreferencesRowTitle(
+                              title: localized.ignoreCachedData,
+                            ),
                             Switch.adaptive(
                               value: _ignoreCachedData,
-                              onChanged: (value) => setState(() => _ignoreCachedData = value),
+                              onChanged: (value) =>
+                                  setState(() => _ignoreCachedData = value),
                             ),
                           ],
                         ),
@@ -307,7 +351,8 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
                             PreferencesRowTitle(title: localized.allowDownload),
                             Switch.adaptive(
                               value: _catalogAllowDownload,
-                              onChanged: (value) => setState(() => _catalogAllowDownload = value),
+                              onChanged: (value) =>
+                                  setState(() => _catalogAllowDownload = value),
                             ),
                           ],
                         ),
@@ -323,7 +368,9 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
                           title: Text(localized.addCatalogConfiguration),
                           onPressed: _isCatalogHrnAddButtonEnabled
                               ? _onAddCatalogConfig
-                              : () => _showErrorMessage(localized.catalogHrnErrorMessage),
+                              : () => _showErrorMessage(
+                                  localized.catalogHrnErrorMessage,
+                                ),
                         ),
                         Spacer(),
                       ],
@@ -341,13 +388,21 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
                             TextButton(
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero, // removes padding
-                                minimumSize: Size.zero, // removes min size constraints
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap, // reduces hit area
-                                foregroundColor: Theme.of(context).colorScheme.secondary, // link color
+                                minimumSize:
+                                    Size.zero, // removes min size constraints
+                                tapTargetSize: MaterialTapTargetSize
+                                    .shrinkWrap, // reduces hit area
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.secondary, // link color
                               ),
                               child: Text(
                                 localized.clearAll,
-                                style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
+                                ),
                               ),
                               onPressed: () => _onClearAllConfigurations(),
                             ),
@@ -360,16 +415,22 @@ class _CustomCatalogConfigurationScreenState extends State<CustomCatalogConfigur
                     physics: const ClampingScrollPhysics(),
                     itemCount: _catalogConfigurations.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final CatalogConfigurationData catalogConfiguration = _catalogConfigurations[index];
+                      final CatalogConfigurationData catalogConfiguration =
+                          _catalogConfigurations[index];
                       return ListTile(
                         title: Text(catalogConfiguration.title(localized)),
                         subtitle: Text(
                           catalogConfiguration.description(localized),
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
                         ),
                         trailing: InkWell(
-                          onTap: () => _onDeleteConfiguration(catalogConfiguration),
-                          child: HdsIconWidget.medium(HdsAssetsPaths.substractSolidIcon),
+                          onTap: () =>
+                              _onDeleteConfiguration(catalogConfiguration),
+                          child: HdsIconWidget.medium(
+                            HdsAssetsPaths.substractSolidIcon,
+                          ),
                         ),
                       );
                     },

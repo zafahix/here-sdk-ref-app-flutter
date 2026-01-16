@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,8 @@ class MapCatalogUpdateHandler implements CatalogUpdateProgressListener {
   final CatalogUpdateInfo catalog;
   int progress = 0;
   CatalogUpdateTask? _task;
-  final List<MapCatalogUpdateListener> _listeners = <MapCatalogUpdateListener>[];
+  final List<MapCatalogUpdateListener> _listeners =
+      <MapCatalogUpdateListener>[];
 
   void start() {
     _task ??= updater?.updateCatalog(catalog, this);

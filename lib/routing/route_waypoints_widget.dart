@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,10 +71,11 @@ class _RouteWayPointsState extends State<RouteWayPoints> {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     bool displayCurrentLocationButton = widget.controller.value.fold(
-        true,
-        (previousValue, element) =>
-            previousValue &&
-            element.sourceType != WayPointInfoSourceType.CurrentPosition);
+      true,
+      (previousValue, element) =>
+          previousValue &&
+          element.sourceType != WayPointInfoSourceType.CurrentPosition,
+    );
 
     return Row(
       children: [
@@ -83,19 +84,18 @@ class _RouteWayPointsState extends State<RouteWayPoints> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildWayPointItem(context, 0, displayCurrentLocationButton),
-              Divider(
-                height: 1,
+              Divider(height: 1),
+              _buildWayPointItem(
+                context,
+                widget.controller.length - 1,
+                displayCurrentLocationButton,
               ),
-              _buildWayPointItem(context, widget.controller.length - 1,
-                  displayCurrentLocationButton),
             ],
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            border: Border.all(
-              color: Theme.of(context).dividerColor,
-            ),
+            border: Border.all(color: Theme.of(context).dividerColor),
             borderRadius: BorderRadius.circular(100),
           ),
           child: widget.controller.length > 2
@@ -113,9 +113,10 @@ class _RouteWayPointsState extends State<RouteWayPoints> {
                     HdsAssetsPaths.switchVertical,
                     color: colorScheme.primary,
                   ),
-                  onPressed: () => setState(() => widget.controller.value =
-                      widget.controller.value
-                          .swap(0, widget.controller.length - 1)),
+                  onPressed: () => setState(
+                    () => widget.controller.value = widget.controller.value
+                        .swap(0, widget.controller.length - 1),
+                  ),
                 ),
         ),
       ],
@@ -123,7 +124,10 @@ class _RouteWayPointsState extends State<RouteWayPoints> {
   }
 
   Widget _buildWayPointItem(
-      BuildContext context, int index, bool displayCurrentLocationButton) {
+    BuildContext context,
+    int index,
+    bool displayCurrentLocationButton,
+  ) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     final WayPointInfo wayPoint = widget.controller[index];
     bool isCurrent =

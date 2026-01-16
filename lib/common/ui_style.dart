@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,12 @@ import 'package:flutter/material.dart';
 /// Helper class that contains all definitions of colors, fonts, sizes and other UI parameters that are used in
 /// the application.
 class UIStyle {
-  static const Color buttonPrimaryColor = Color(0xFF6B9CFF); // Primary button color
-  static const Color buttonSecondaryColor = Color(0xFF65EBE2); // Secondary button color
+  static const Color buttonPrimaryColor = Color(
+    0xFF6B9CFF,
+  ); // Primary button color
+  static const Color buttonSecondaryColor = Color(
+    0xFF65EBE2,
+  ); // Secondary button color
   static const Color accuracyCircleColor = Color(0x550BC7C2);
   static const Color selectedListTileColor = Color(0xFFF5F5F5);
   static const Color acceptedConsentColor = Color(0xFF80E3C1);
@@ -43,7 +47,9 @@ class UIStyle {
   static const Color noLocationWarningBackgroundColor = Color(0xCC000A19);
   static const Color noLocationWarningColor = Color(0xFFFFFFFF);
 
-  static const Color loadCustomStyleResultPopupBackgroundColor = Color(0xCC000A19);
+  static const Color loadCustomStyleResultPopupBackgroundColor = Color(
+    0xCC000A19,
+  );
   static const Color loadCustomStyleResultPopupTextColor = Color(0xFFFFFFFF);
 
   static const Color errorMessageTextColor = Color(0xFFFFFFFF);
@@ -111,11 +117,26 @@ class UIStyle {
   // HERE colors
   static const Color _lightBackground = Color.fromARGB(0xff, 0xf5, 0xf5, 0xf5);
   static const Color _lightAccent = Color.fromARGB(0xff, 0x12, 0x6e, 0xf8);
-  static const Color _lightAccentSecondary = Color.fromARGB(0xff, 0x2c, 0x48, 0xa1);
+  static const Color _lightAccentSecondary = Color.fromARGB(
+    0xff,
+    0x2c,
+    0x48,
+    0xa1,
+  );
   static const Color _lightForeground = Color.fromARGB(0xff, 0x27, 0x2d, 0x37);
-  static const Color _lightForegroundSecondary = Color.fromARGB(0xff, 0x6f, 0x73, 0x7a);
-  static const Color _lightForegroundHint = Color.fromARGB(0xff, 0xb7, 0xb9, 0xbc);
-  static const Color foregroundInactive =  Color.fromRGBO(0, 25, 75, 0.20);
+  static const Color _lightForegroundSecondary = Color.fromARGB(
+    0xff,
+    0x6f,
+    0x73,
+    0x7a,
+  );
+  static const Color _lightForegroundHint = Color.fromARGB(
+    0xff,
+    0xb7,
+    0xb9,
+    0xbc,
+  );
+  static const Color foregroundInactive = Color.fromRGBO(0, 25, 75, 0.20);
 
   static final ThemeData lightTheme = ThemeData(
     useMaterial3: false,
@@ -123,13 +144,9 @@ class UIStyle {
     appBarTheme: const AppBarTheme(
       backgroundColor: _lightBackground,
       foregroundColor: _lightForeground,
-      iconTheme: IconThemeData(
-        color: _lightAccent,
-      ),
+      iconTheme: IconThemeData(color: _lightAccent),
     ),
-    iconTheme: const IconThemeData(
-      color: _lightAccent,
-    ),
+    iconTheme: const IconThemeData(color: _lightAccent),
     textTheme: _lightTextTheme,
     textSelectionTheme: const TextSelectionThemeData(
       cursorColor: _lightAccent,
@@ -186,21 +203,18 @@ class UIStyle {
     titleSmall: _lightHintTextStyle,
   );
 
-  static const InputDecorationTheme _lightInputDecorationTheme = InputDecorationTheme(
-    filled: false,
-    fillColor: Colors.transparent,
-    border: UnderlineInputBorder(
-        borderSide: BorderSide(
-      color: _lightForegroundHint,
-    )),
-    focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(
-      color: _lightForegroundHint,
-    )),
-    hintStyle: TextStyle(
-      color: _lightForegroundHint,
-    ),
-  );
+  static const InputDecorationTheme _lightInputDecorationTheme =
+      InputDecorationTheme(
+        filled: false,
+        fillColor: Colors.transparent,
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(color: _lightForegroundHint),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: _lightForegroundHint),
+        ),
+        hintStyle: TextStyle(color: _lightForegroundHint),
+      );
 
   /// Creates text style for the options section text.
   static TextStyle optionsSectionStyle(BuildContext context) {
@@ -213,38 +227,34 @@ class UIStyle {
 
   /// Creates rounded rect shape decoration.
   static ShapeDecoration roundedRectDecoration() => ShapeDecoration(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            width: optionsRectBorderWidth,
-            style: BorderStyle.solid,
-            color: optionsBorderColor,
-          ),
-          borderRadius: BorderRadius.all(
-            Radius.circular(optionsRectBorderRadius),
-          ),
-        ),
-      );
+    shape: RoundedRectangleBorder(
+      side: BorderSide(
+        width: optionsRectBorderWidth,
+        style: BorderStyle.solid,
+        color: optionsBorderColor,
+      ),
+      borderRadius: BorderRadius.all(Radius.circular(optionsRectBorderRadius)),
+    ),
+  );
 
   /// Creates bottom divider decoration.
   static BoxDecoration bottomDividerDecoration() => BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: optionsBorderColor, width: 1.0),
-        ),
-      );
+    border: Border(bottom: BorderSide(color: optionsBorderColor, width: 1.0)),
+  );
 
   /// Creates top rounded border shape.
   static ShapeBorder topRoundedBorder() => RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(popupsBorderRadius),
-          topRight: Radius.circular(popupsBorderRadius),
-        ),
-      );
+    borderRadius: BorderRadius.only(
+      topLeft: Radius.circular(popupsBorderRadius),
+      topRight: Radius.circular(popupsBorderRadius),
+    ),
+  );
 
   /// Creates bottom rounded border shape.
   static ShapeBorder bottomRoundedBorder() => RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(popupsBorderRadius),
-          bottomRight: Radius.circular(popupsBorderRadius),
-        ),
-      );
+    borderRadius: BorderRadius.only(
+      bottomLeft: Radius.circular(popupsBorderRadius),
+      bottomRight: Radius.circular(popupsBorderRadius),
+    ),
+  );
 }

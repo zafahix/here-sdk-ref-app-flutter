@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,8 @@ class _RegionDownloadTask extends _RegionTask {
   @override
   set progress(int value) => _progress = value;
 
-  _RegionDownloadTask({
-    required RegionId regionId,
-    required this.task,
-  }) : super(
-          regionId: regionId,
-        );
+  _RegionDownloadTask({required RegionId regionId, required this.task})
+    : super(regionId: regionId);
 
   @override
   void cancel() {
@@ -82,11 +78,7 @@ class _RegionDeleteTask extends _RegionTask {
   @override
   set progress(int value) => null;
 
-  _RegionDeleteTask({
-    required RegionId regionId,
-  }) : super(
-          regionId: regionId,
-        );
+  _RegionDeleteTask({required RegionId regionId}) : super(regionId: regionId);
 
   @override
   void cancel() {}
@@ -98,15 +90,11 @@ class _RegionDeleteTask extends _RegionTask {
   void resume() {}
 }
 
-enum MapUpdateState {
-  none,
-  progress,
-  paused,
-  cancelling,
-}
+enum MapUpdateState { none, progress, paused, cancelling }
 
 /// Data controller that manages offline maps.
-class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateListener {
+class MapLoaderController extends ChangeNotifier
+    implements MapCatalogUpdateListener {
   MapUpdater? _mapUpdater;
   Completer<MapUpdater> _mapUpdaterCompleter = Completer();
 
@@ -115,7 +103,8 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
   MapDownloader? _mapDownloader;
   Completer<MapDownloader> _mapDownloaderCompleter = Completer();
 
-  Future<MapDownloader> get mapDownloader async => await _mapDownloaderCompleter.future;
+  Future<MapDownloader> get mapDownloader async =>
+      await _mapDownloaderCompleter.future;
 
   Map<RegionId, _RegionTask> _regionsInProgress = {};
 
@@ -125,7 +114,8 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
 
   MapUpdateState _mapUpdateState = MapUpdateState.none;
   int? _mapUpdateProgress;
-  StreamController<MapLoaderError> _mapUpdateErrors = StreamController.broadcast();
+  StreamController<MapLoaderError> _mapUpdateErrors =
+      StreamController.broadcast();
   List<MapCatalogUpdateHandler>? _catalogHandlers;
   MapCatalogUpdateHandler? _currentCatalogHandler;
 
@@ -137,13 +127,17 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
   /// Initializes the MapDownloader and MapUpdater instances asynchronously.
   Future<void> init() async {
     // Create MapDownloader from the SDK engine and complete the downloader future.
-    MapDownloader.fromSdkEngineAsync(SDKNativeEngine.sharedInstance!, (MapDownloader downloader) {
+    MapDownloader.fromSdkEngineAsync(SDKNativeEngine.sharedInstance!, (
+      MapDownloader downloader,
+    ) {
       _mapDownloader = downloader;
       _mapDownloaderCompleter.complete(_mapDownloader);
     });
 
     // Create MapUpdater from the SDK engine and complete the updater future.
-    MapUpdater.fromSdkEngineAsync(SDKNativeEngine.sharedInstance!, (MapUpdater updater) {
+    MapUpdater.fromSdkEngineAsync(SDKNativeEngine.sharedInstance!, (
+      MapUpdater updater,
+    ) {
       _mapUpdater = updater;
       _mapUpdaterCompleter.complete(_mapUpdater);
     });
@@ -183,12 +177,17 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
     try {
       if (_mapDownloader != null) {
         installedRegions = _mapDownloader!.getInstalledRegions();
-        installedRegions.removeWhere((elementToRemove) =>
-            elementToRemove.status == InstalledRegionStatus.pending &&
-            installedRegions
-                .where((element) =>
-                    element.status == InstalledRegionStatus.pending && element.regionId == elementToRemove.parentId)
-                .isNotEmpty);
+        installedRegions.removeWhere(
+          (elementToRemove) =>
+              elementToRemove.status == InstalledRegionStatus.pending &&
+              installedRegions
+                  .where(
+                    (element) =>
+                        element.status == InstalledRegionStatus.pending &&
+                        element.regionId == elementToRemove.parentId,
+                  )
+                  .isNotEmpty,
+        );
       }
     } on MapLoaderExceptionException catch (error) {
       print('Failed to get installed regions: ${error.error.toString()}');
@@ -204,21 +203,27 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
     }
 
     MapDownloaderTask task = (await mapDownloader).downloadRegions(
-        [region],
-        DownloadRegionsStatusListener((error, regions) {
+      [region],
+      DownloadRegionsStatusListener(
+        (error, regions) {
           _regionsInProgress.remove(region);
           _pausedRegionsWhenOffline.remove(region);
           notifyListeners();
-        }, (id, progress) {
+        },
+        (id, progress) {
           _regionsInProgress[region]?.progress = progress;
           notifyListeners();
-        }, (error) {
+        },
+        (error) {
           _pausedRegionsWhenOffline.add(region);
           notifyListeners();
-        }, () {
+        },
+        () {
           _pausedRegionsWhenOffline.remove(region);
           notifyListeners();
-        }));
+        },
+      ),
+    );
 
     _regionsInProgress[region] = _RegionDownloadTask(
       regionId: region,
@@ -247,7 +252,9 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
 
   /// Cancels download of all the [Region].
   void cancelDownloads(List<RegionId> regions) {
-    final Iterable<RegionId> downloadingRegions = _regionsInProgress.keys.where((e) => regions.contains(e));
+    final Iterable<RegionId> downloadingRegions = _regionsInProgress.keys.where(
+      (e) => regions.contains(e),
+    );
     for (final region in downloadingRegions) {
       _regionsInProgress[region]?.cancel();
     }
@@ -256,9 +263,7 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
 
   /// Deleted downloaded [Region].
   Future<void> deleteRegion(RegionId region) async {
-    _regionsInProgress[region] = _RegionDeleteTask(
-      regionId: region,
-    );
+    _regionsInProgress[region] = _RegionDeleteTask(regionId: region);
     notifyListeners();
 
     (await mapDownloader).deleteRegions([region], (error, regions) {
@@ -276,32 +281,41 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
   /// Checks if any region download is currently in progress.
   ///
   /// Returns `true` if at least one region has a progress value of 0 or greater,
-  bool isAnyDownloadInProgress() => _regionsInProgress.values.any((_RegionTask region) => region.progress >= 0);
+  bool isAnyDownloadInProgress() => _regionsInProgress.values.any(
+    (_RegionTask region) => region.progress >= 0,
+  );
 
   // Handle pending Map Downloads
   void resumePendingMapDownloads() {
     if (_pausedRegionsWhenOffline.isNotEmpty) {
-      _pausedRegionsWhenOffline.forEach((RegionId region) => _regionsInProgress[region]?.resume());
+      _pausedRegionsWhenOffline.forEach(
+        (RegionId region) => _regionsInProgress[region]?.resume(),
+      );
       notifyListeners();
     }
   }
 
   /// Checks for map updates
   Future<bool> isMapUpdateAvailable() async {
-    final Completer<List<CatalogUpdateInfo>?> getCatalogs = Completer<List<CatalogUpdateInfo>?>();
-    (await mapUpdater).retrieveCatalogsUpdateInfo(
-      (MapLoaderError? error, List<CatalogUpdateInfo>? catalogs) {
-        if (error != null) {
-          getCatalogs.completeError(error);
-          return;
-        }
-        getCatalogs.complete(catalogs);
-      },
-    );
+    final Completer<List<CatalogUpdateInfo>?> getCatalogs =
+        Completer<List<CatalogUpdateInfo>?>();
+    (await mapUpdater).retrieveCatalogsUpdateInfo((
+      MapLoaderError? error,
+      List<CatalogUpdateInfo>? catalogs,
+    ) {
+      if (error != null) {
+        getCatalogs.completeError(error);
+        return;
+      }
+      getCatalogs.complete(catalogs);
+    });
     final List<CatalogUpdateInfo>? newCatalogs = await getCatalogs.future;
     if (newCatalogs != null && newCatalogs.isNotEmpty && _mapUpdater != null) {
       _catalogHandlers = newCatalogs.map((CatalogUpdateInfo catalog) {
-        final MapCatalogUpdateHandler handler = MapCatalogUpdateHandler(_mapUpdater, catalog)..addListener(this);
+        final MapCatalogUpdateHandler handler = MapCatalogUpdateHandler(
+          _mapUpdater,
+          catalog,
+        )..addListener(this);
         return handler;
       }).toList();
     } else {
@@ -319,7 +333,9 @@ class MapLoaderController extends ChangeNotifier implements MapCatalogUpdateList
 
   /// Clear app cache
   Future<void> clearAppCache() async {
-    return _onCallback(SDKCache.fromSdkEngine(SDKNativeEngine.sharedInstance!).clearAppCache);
+    return _onCallback(
+      SDKCache.fromSdkEngine(SDKNativeEngine.sharedInstance!).clearAppCache,
+    );
   }
 
   Future<void> _onCallback(Function callbackFunction) {

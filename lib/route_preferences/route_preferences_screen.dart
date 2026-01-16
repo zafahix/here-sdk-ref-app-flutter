@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,8 @@ import 'truck_options_screen.dart';
 /// Routing preferences screen widget.
 class RoutePreferencesScreen extends StatefulWidget {
   /// Constructs a widget.
-  RoutePreferencesScreen({
-    Key? key,
-    required this.activeTransportMode,
-  }) : super(key: key);
+  RoutePreferencesScreen({Key? key, required this.activeTransportMode})
+    : super(key: key);
 
   /// Active transport mode for display.
   final TransportModes activeTransportMode;
@@ -44,7 +42,8 @@ class RoutePreferencesScreen extends StatefulWidget {
   _RoutePreferencesScreenState createState() => _RoutePreferencesScreenState();
 }
 
-class _RoutePreferencesScreenState extends State<RoutePreferencesScreen> with TickerProviderStateMixin {
+class _RoutePreferencesScreenState extends State<RoutePreferencesScreen>
+    with TickerProviderStateMixin {
   late TabController _transportModesTabController;
   late List<TransportModes> _transportModes;
 
@@ -53,8 +52,14 @@ class _RoutePreferencesScreenState extends State<RoutePreferencesScreen> with Ti
     super.initState();
     // The HERE SDK supports car, truck, scooter and walk transport modes.
     _transportModes = TransportModes.values;
-    _transportModesTabController = TabController(length: _transportModes.length, vsync: this);
-    _transportModesTabController.index = max(_transportModes.indexOf(widget.activeTransportMode), 0);
+    _transportModesTabController = TabController(
+      length: _transportModes.length,
+      vsync: this,
+    );
+    _transportModesTabController.index = max(
+      _transportModes.indexOf(widget.activeTransportMode),
+      0,
+    );
   }
 
   @override
@@ -83,7 +88,10 @@ class _RoutePreferencesScreenState extends State<RoutePreferencesScreen> with Ti
         canPop: false,
         onPopInvokedWithResult: (bool didPop, _) {
           if (!didPop) {
-            Navigator.pop(context, _transportModes[_transportModesTabController.index]);
+            Navigator.pop(
+              context,
+              _transportModes[_transportModesTabController.index],
+            );
           }
         },
         child: Container(
@@ -92,12 +100,15 @@ class _RoutePreferencesScreenState extends State<RoutePreferencesScreen> with Ti
             onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
             child: Padding(
               padding: const EdgeInsets.only(
-                  left: UIStyle.contentMarginMedium,
-                  right: UIStyle.contentMarginMedium,
-                  bottom: UIStyle.contentMarginHuge),
+                left: UIStyle.contentMarginMedium,
+                right: UIStyle.contentMarginMedium,
+                bottom: UIStyle.contentMarginHuge,
+              ),
               child: TabBarView(
                 controller: _transportModesTabController,
-                children: _transportModes.map((e) => e.getOptionsScreen).toList(),
+                children: _transportModes
+                    .map((e) => e.getOptionsScreen)
+                    .toList(),
               ),
             ),
           ),

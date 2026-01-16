@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,8 @@ class RoutePreferencesModel extends ChangeNotifier {
   set sharedRouteOptions(RouteOptions value) {
     _sharedRouteOptions = value;
     _carOptions.routeOptions = _truckOptions.routeOptions =
-        _scooterOptions.routeOptions = _pedestrianOptions.routeOptions = _sharedRouteOptions;
+        _scooterOptions.routeOptions = _pedestrianOptions.routeOptions =
+            _sharedRouteOptions;
     notifyListeners();
   }
 
@@ -70,15 +71,16 @@ class RoutePreferencesModel extends ChangeNotifier {
   set sharedRouteTextOptions(RouteTextOptions value) {
     _sharedRouteTextOptions = value;
     _carOptions.textOptions = _truckOptions.textOptions =
-        _scooterOptions.textOptions = _pedestrianOptions.textOptions = _sharedRouteTextOptions;
+        _scooterOptions.textOptions = _pedestrianOptions.textOptions =
+            _sharedRouteTextOptions;
     notifyListeners();
   }
 
   /// Sets new route avoidance settings.
   set sharedAvoidanceOptions(AvoidanceOptions value) {
     _sharedAvoidanceOptions = value;
-    _carOptions.avoidanceOptions =
-        _truckOptions.avoidanceOptions = _scooterOptions.avoidanceOptions = _sharedAvoidanceOptions;
+    _carOptions.avoidanceOptions = _truckOptions.avoidanceOptions =
+        _scooterOptions.avoidanceOptions = _sharedAvoidanceOptions;
     notifyListeners();
   }
 
@@ -105,10 +107,10 @@ class RoutePreferencesModel extends ChangeNotifier {
 
   /// Constructs a settings objects with default values.
   RoutePreferencesModel.withDefaults()
-      : _carOptions = CarOptions(),
-        _truckOptions = TruckOptions(),
-        _scooterOptions = ScooterOptions(),
-        _pedestrianOptions = PedestrianOptions() {
+    : _carOptions = CarOptions(),
+      _truckOptions = TruckOptions(),
+      _scooterOptions = ScooterOptions(),
+      _pedestrianOptions = PedestrianOptions() {
     _setupSharedOptions();
   }
 
@@ -120,12 +122,14 @@ class RoutePreferencesModel extends ChangeNotifier {
     _sharedRouteOptions.alternatives = defaultAlternativeRoutes;
 
     _carOptions.routeOptions = _truckOptions.routeOptions =
-        _scooterOptions.routeOptions = _pedestrianOptions.routeOptions = _sharedRouteOptions;
+        _scooterOptions.routeOptions = _pedestrianOptions.routeOptions =
+            _sharedRouteOptions;
 
     _carOptions.textOptions = _truckOptions.textOptions =
-        _scooterOptions.textOptions = _pedestrianOptions.textOptions = _sharedRouteTextOptions;
+        _scooterOptions.textOptions = _pedestrianOptions.textOptions =
+            _sharedRouteTextOptions;
 
-    _carOptions.avoidanceOptions =
-        _truckOptions.avoidanceOptions = _scooterOptions.avoidanceOptions = _sharedAvoidanceOptions;
+    _carOptions.avoidanceOptions = _truckOptions.avoidanceOptions =
+        _scooterOptions.avoidanceOptions = _sharedAvoidanceOptions;
   }
 }

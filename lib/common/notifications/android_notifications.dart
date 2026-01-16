@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 HERE Europe B.V.
+ * Copyright (C) 2024-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,17 @@ class AndroidNotificationsManager implements NotificationsManager {
 
   @override
   Future<bool?> requestNotificationPermissions() async {
-    final PermissionStatus notificationPermission = await Permission.notification.request();
+    final PermissionStatus notificationPermission = await Permission
+        .notification
+        .request();
     return notificationPermission.isGranted || notificationPermission.isLimited;
   }
 
   @override
   Future<void> showNotification(NotificationBody body) async {
     try {
-      final String savedImagePath = await FileUtility.saveManeuverImageFromBundle(body.imagePath);
+      final String savedImagePath =
+          await FileUtility.saveManeuverImageFromBundle(body.imagePath);
       await _kAndroidServiceChannel.invokeMethod(_kAndroidServiceStartCommand, {
         _kTitleParam: body.title,
         _kContentParam: body.body,

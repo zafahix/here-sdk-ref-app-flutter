@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,21 +45,19 @@ class WayPointInfo extends Routing.Waypoint {
 
   String get title => place?.title ?? coordinates.toPrettyString();
 
-  WayPointInfo({
-    required GeoCoordinates coordinates,
-  })  : place = null,
-        sourceType = WayPointInfoSourceType.CurrentPosition,
-        super.withDefaults(coordinates);
+  WayPointInfo({required GeoCoordinates coordinates})
+    : place = null,
+      sourceType = WayPointInfoSourceType.CurrentPosition,
+      super.withDefaults(coordinates);
 
-  WayPointInfo.withCoordinates({
-    required GeoCoordinates coordinates,
-  })  : place = null,
-        sourceType = WayPointInfoSourceType.Coordinates,
-        super.withDefaults(coordinates);
+  WayPointInfo.withCoordinates({required GeoCoordinates coordinates})
+    : place = null,
+      sourceType = WayPointInfoSourceType.Coordinates,
+      super.withDefaults(coordinates);
 
   WayPointInfo.withPlace({
     required this.place,
     GeoCoordinates? originalCoordinates = null,
-  })  : sourceType = WayPointInfoSourceType.Place,
-        super.withDefaults(originalCoordinates ?? place!.geoCoordinates!);
+  }) : sourceType = WayPointInfoSourceType.Place,
+       super.withDefaults(originalCoordinates ?? place!.geoCoordinates!);
 }

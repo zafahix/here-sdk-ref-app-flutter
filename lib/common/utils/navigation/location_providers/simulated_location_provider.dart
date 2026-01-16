@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,12 @@ import 'package:here_sdk/routing.dart';
 import 'package:here_sdk_reference_application_flutter/common/extensions/location_listener_extension.dart';
 import 'package:here_sdk_reference_application_flutter/common/utils/navigation/location_provider_interface.dart';
 
-class SimulatedLocationProvider extends LocationProviderInterface implements LocationListener {
-  SimulatedLocationProvider.withRoute(Route route, LocationSimulatorOptions options) {
+class SimulatedLocationProvider extends LocationProviderInterface
+    implements LocationListener {
+  SimulatedLocationProvider.withRoute(
+    Route route,
+    LocationSimulatorOptions options,
+  ) {
     _simulator = LocationSimulator.withRoute(route, options);
     _simulator.listener = this;
   }
@@ -45,7 +49,6 @@ class SimulatedLocationProvider extends LocationProviderInterface implements Loc
       ..setBackgroundLocationAllowed(true)
       ..setBackgroundLocationIndicatorVisible(true)
       ..setPauseLocationUpdatesAutomatically(true)
-
       /// Important: The HERE Privacy Notice must be shown and accepted by the user
       /// before starting the LocationEngine. Ensure the FTU/privacy screen is displayed
       /// at app start-up. This method must be called every time before starting the engine.
@@ -72,5 +75,6 @@ class SimulatedLocationProvider extends LocationProviderInterface implements Loc
   void removeListeners() => _listeners.clear();
 
   @override
-  void onLocationUpdated(Location location) => _listeners.notifyOnLocationUpdated(location);
+  void onLocationUpdated(Location location) =>
+      _listeners.notifyOnLocationUpdated(location);
 }

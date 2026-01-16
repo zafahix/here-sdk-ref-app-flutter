@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,10 @@ typedef ReroutingCallback = void Function(Routing.Route? newRoute);
 /// Helper class that monitors the deviation from the current route and performs route recalculation if necessary.
 /// [Routing.RoutingEngine] is used to calculate a new route. Calculation of a new route starts when the deviation from
 /// the current route exceeds [_kMaxRouteDeviation] meters for [_kMaxRouteDeviationTime] seconds.
-class ReroutingHandler implements Navigation.RouteDeviationListener, Navigation.MilestoneStatusListener {
+class ReroutingHandler
+    implements
+        Navigation.RouteDeviationListener,
+        Navigation.MilestoneStatusListener {
   /// The maximum deviation distance in meters.
   static const int _kMaxRouteDeviation = 20;
 
@@ -63,15 +66,17 @@ class ReroutingHandler implements Navigation.RouteDeviationListener, Navigation.
   int _passedWayPointIndex = 0;
 
   /// Constructs a [ReroutingHandler] object.
-  ReroutingHandler(
-      {required this.visualNavigator,
-      required List<Routing.Waypoint> wayPoints,
-      required this.preferences,
-      required this.onBeginRerouting,
-      required this.onNewRoute,
-      required this.offline})
-      : _wayPoints = wayPoints,
-        _routingEngine = offline ? Routing.OfflineRoutingEngine() : Routing.RoutingEngine();
+  ReroutingHandler({
+    required this.visualNavigator,
+    required List<Routing.Waypoint> wayPoints,
+    required this.preferences,
+    required this.onBeginRerouting,
+    required this.onNewRoute,
+    required this.offline,
+  }) : _wayPoints = wayPoints,
+       _routingEngine = offline
+           ? Routing.OfflineRoutingEngine()
+           : Routing.RoutingEngine();
 
   /// Called by [Navigator] whenever route deviation has been observed.
   @override
@@ -82,7 +87,8 @@ class ReroutingHandler implements Navigation.RouteDeviationListener, Navigation.
     }
 
     // Get current geographic coordinates.
-    Navigation.MapMatchedLocation? currentMapMatchedLocation = routeDeviation.currentLocation.mapMatchedLocation;
+    Navigation.MapMatchedLocation? currentMapMatchedLocation =
+        routeDeviation.currentLocation.mapMatchedLocation;
     GeoCoordinates currentGeoCoordinates = currentMapMatchedLocation == null
         ? routeDeviation.currentLocation.originalLocation.coordinates
         : currentMapMatchedLocation.coordinates;
@@ -97,14 +103,21 @@ class ReroutingHandler implements Navigation.RouteDeviationListener, Navigation.
           ? routeDeviation.lastLocationOnRoute!.originalLocation.coordinates
           : lastMapMatchedLocationOnRoute.coordinates;
     } else {
-      print('User was never following the route. So, we take the start of the route instead.');
-      lastGeoCoordinatesOnRoute = route.sections.first.departurePlace.originalCoordinates!;
+      print(
+        'User was never following the route. So, we take the start of the route instead.',
+      );
+      lastGeoCoordinatesOnRoute =
+          route.sections.first.departurePlace.originalCoordinates!;
     }
 
-    int distanceInMeters = currentGeoCoordinates.distanceTo(lastGeoCoordinatesOnRoute).truncate();
+    int distanceInMeters = currentGeoCoordinates
+        .distanceTo(lastGeoCoordinatesOnRoute)
+        .truncate();
     if (distanceInMeters > _kMaxRouteDeviation) {
       _reroutingTimer ??= Timer(
-          Duration(seconds: _kMaxRouteDeviationTime), () => _beginRerouting(currentGeoCoordinates, route, heading));
+        Duration(seconds: _kMaxRouteDeviationTime),
+        () => _beginRerouting(currentGeoCoordinates, route, heading),
+      );
     } else {
       _reroutingTimer?.cancel();
       _reroutingTimer = null;
@@ -116,36 +129,53 @@ class ReroutingHandler implements Navigation.RouteDeviationListener, Navigation.
     _reroutingTimer?.cancel();
   }
 
-  void _beginRerouting(GeoCoordinates currentPosition, Routing.Route oldRoute, double? heading) {
+  void _beginRerouting(
+    GeoCoordinates currentPosition,
+    Routing.Route oldRoute,
+    double? heading,
+  ) {
     print("Begin rerouting...");
     _reroutingInProgress = true;
     _reroutingTimer = null;
     onBeginRerouting();
 
     List<Routing.Waypoint> newWayPoints = [
-      Routing.Waypoint.withDefaults(currentPosition)..headingInDegrees = heading,
-      ..._wayPoints.sublist(_passedWayPointIndex + 1)
+      Routing.Waypoint.withDefaults(currentPosition)
+        ..headingInDegrees = heading,
+      ..._wayPoints.sublist(_passedWayPointIndex + 1),
     ];
 
     switch (oldRoute.requestedTransportMode) {
       case Transport.TransportMode.car:
         _routingEngine.calculateCarRoute(
-            newWayPoints, preferences.carOptions, (error, routes) => _onReroutingEnd(error, routes, newWayPoints));
+          newWayPoints,
+          preferences.carOptions,
+          (error, routes) => _onReroutingEnd(error, routes, newWayPoints),
+        );
         break;
 
       case Transport.TransportMode.truck:
         _routingEngine.calculateTruckRoute(
-            newWayPoints, preferences.truckOptions, (error, routes) => _onReroutingEnd(error, routes, newWayPoints));
+          newWayPoints,
+          preferences.truckOptions,
+          (error, routes) => _onReroutingEnd(error, routes, newWayPoints),
+        );
         break;
 
       case Transport.TransportMode.scooter:
         _routingEngine.calculateScooterRoute(
-            newWayPoints, preferences.scooterOptions, (error, routes) => _onReroutingEnd(error, routes, newWayPoints));
+          newWayPoints,
+          preferences.scooterOptions,
+          (error, routes) => _onReroutingEnd(error, routes, newWayPoints),
+        );
         break;
 
       case Transport.TransportMode.pedestrian:
-        _routingEngine.calculatePedestrianRoute(newWayPoints, preferences.pedestrianOptions,
-            (error, routes) => _onReroutingEnd(error, routes, newWayPoints));
+        _routingEngine.calculatePedestrianRoute(
+          newWayPoints,
+          preferences.pedestrianOptions,
+          (error, routes) => _onReroutingEnd(error, routes, newWayPoints),
+        );
         break;
 
       default:
@@ -153,7 +183,11 @@ class ReroutingHandler implements Navigation.RouteDeviationListener, Navigation.
     }
   }
 
-  void _onReroutingEnd(Routing.RoutingError? error, List<Routing.Route>? routes, List<Routing.Waypoint> newWayPoints) {
+  void _onReroutingEnd(
+    Routing.RoutingError? error,
+    List<Routing.Route>? routes,
+    List<Routing.Waypoint> newWayPoints,
+  ) {
     if (routes == null || routes.isEmpty) {
       if (error != null) {
         print('Routing failed. Error: ${error.toString()}');
@@ -172,7 +206,10 @@ class ReroutingHandler implements Navigation.RouteDeviationListener, Navigation.
 
   /// Called by [Navigator] when a milestone has been reached.
   @override
-  void onMilestoneStatusUpdated(Navigation.Milestone milestone, Navigation.MilestoneStatus status) {
+  void onMilestoneStatusUpdated(
+    Navigation.Milestone milestone,
+    Navigation.MilestoneStatus status,
+  ) {
     if (milestone.waypointIndex != null) {
       _passedWayPointIndex = milestone.waypointIndex!;
     }

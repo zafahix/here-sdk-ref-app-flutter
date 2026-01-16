@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,16 +88,21 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
     });
   }
 
-  int get _markerSize => (_hereMapController.pixelScale * UIStyle.maneuverMarkerSize).round();
+  int get _markerSize =>
+      (_hereMapController.pixelScale * UIStyle.maneuverMarkerSize).round();
 
   void _onMapSceneLoaded(MapError? error) {
     if (error != null) {
-      debugPrint('ERROR :: Map scene not loaded. MapError: ${error.toString()}');
+      debugPrint(
+        'ERROR :: Map scene not loaded. MapError: ${error.toString()}',
+      );
       return;
     }
     final deviceHeight = MediaQuery.of(context).size.height;
     _addRouteToMap();
-    _updatePrincipalPoint(bottomPanelHeight: deviceHeight * _minBottomSheetExtent);
+    _updatePrincipalPoint(
+      bottomPanelHeight: deviceHeight * _minBottomSheetExtent,
+    );
     _updateWatermarkPosition(margin: _minBottomSheetExtent);
     // Implementing the tap listener to enable zooming into the selected maneuver.
     _setTapGestureHandler();
@@ -109,7 +114,9 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
 
   void _pickMapMarker(Point2D touchPoint) {
     _hereMapController.pick(
-      MapSceneMapPickFilter(<MapSceneMapPickFilterContentType>[MapSceneMapPickFilterContentType.mapItems]),
+      MapSceneMapPickFilter(<MapSceneMapPickFilterContentType>[
+        MapSceneMapPickFilterContentType.mapItems,
+      ]),
       Rectangle2D(touchPoint, Size2D(_kTapRadius, _kTapRadius)),
       (MapPickResult? result) {
         List<MapMarker>? mapMarkersList = result?.mapItems?.markers;
@@ -131,13 +138,20 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
   void _updateCamera({required double bottomPanelHeight}) {
     final BuildContext? mapContext = _mapKey.currentContext;
     if (mapContext != null && mapContext.size != null) {
-      final Size2D _mapRect = Size2D(mapContext.size!.width, mapContext.size!.height);
+      final Size2D _mapRect = Size2D(
+        mapContext.size!.width,
+        mapContext.size!.height,
+      );
       _hereMapController.camera.lookAtAreaWithGeoOrientationAndViewRectangle(
         widget.route.boundingBox.expandedByPercentage(_paddingFactor),
         GeoOrientationUpdate(null, null),
         Rectangle2D(
           Point2D(0, _markerSize.toDouble()) * _hereMapController.pixelScale,
-          Size2D(_mapRect.width, _mapRect.height - _markerSize - bottomPanelHeight) * _hereMapController.pixelScale,
+          Size2D(
+                _mapRect.width,
+                _mapRect.height - _markerSize - bottomPanelHeight,
+              ) *
+              _hereMapController.pixelScale,
         ),
       );
     }
@@ -148,7 +162,9 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
     if (mounted && _mapSize != null) {
       final Point2D principalPoint = Point2D(
         _hereMapController.pixelScale * _mapSize!.width / 2,
-        _hereMapController.pixelScale * ((_mapSize!.height - bottomPanelHeight)) * _principalPointYFactor,
+        _hereMapController.pixelScale *
+            ((_mapSize!.height - bottomPanelHeight)) *
+            _principalPointYFactor,
       );
       _hereMapController.camera.principalPoint = principalPoint;
     }
@@ -162,13 +178,20 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
   }
 
   void _addRouteToMap() {
-    _mapRoute = MapPolyline.withRepresentation(widget.route.geometry, mapRouteRepresentation());
+    _mapRoute = MapPolyline.withRepresentation(
+      widget.route.geometry,
+      mapRouteRepresentation(),
+    );
     _hereMapController.mapScene.addMapPolyline(_mapRoute);
-    MapImage mapImage =
-        MapImage.withFilePathAndWidthAndHeight(HdsAssetsPaths.currentLocation, _markerSize, _markerSize);
+    MapImage mapImage = MapImage.withFilePathAndWidthAndHeight(
+      HdsAssetsPaths.currentLocation,
+      _markerSize,
+      _markerSize,
+    );
     widget.route.sections.forEach((section) {
       section.maneuvers.forEach((maneuver) {
-        if (maneuver.action == Routing.ManeuverAction.depart || maneuver.action == Routing.ManeuverAction.arrive) {
+        if (maneuver.action == Routing.ManeuverAction.depart ||
+            maneuver.action == Routing.ManeuverAction.arrive) {
           return;
         }
         MapMarker maneuverMarker = Util.createMarkerWithImage(
@@ -198,8 +221,13 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
     if (context != null) {
       final RenderBox box = context.findRenderObject() as RenderBox;
       _hereMapController.camera.principalPoint =
-          Point2D(box.size.width, box.size.height) / 2 * _hereMapController.pixelScale;
-      _hereMapController.zoomToLogicalViewPort(geoBox: widget.route.boundingBox, context: context);
+          Point2D(box.size.width, box.size.height) /
+          2 *
+          _hereMapController.pixelScale;
+      _hereMapController.zoomToLogicalViewPort(
+        geoBox: widget.route.boundingBox,
+        context: context,
+      );
     }
   }
 
@@ -224,7 +252,8 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final HereMapOptions options = HereMapOptions()..initialBackgroundColor = Theme.of(context).colorScheme.surface;
+    final HereMapOptions options = HereMapOptions()
+      ..initialBackgroundColor = Theme.of(context).colorScheme.surface;
     return PopScope(
       canPop: !_hasBeenZoomedToManeuver,
       onPopInvokedWithResult: (_, __) {
@@ -241,12 +270,17 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
         bottomSheet: DraggableScrollableActuator(
           child: NotificationListener<DraggableScrollableNotification>(
             onNotification: (DraggableScrollableNotification notification) {
-              _maneuversSheetIsExpanded = notification.minExtent != notification.extent;
+              _maneuversSheetIsExpanded =
+                  notification.minExtent != notification.extent;
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
                   final deviceHeight = MediaQuery.of(context).size.height;
-                  _updateCamera(bottomPanelHeight: deviceHeight * notification.extent);
-                  _updatePrincipalPoint(bottomPanelHeight: deviceHeight * notification.extent);
+                  _updateCamera(
+                    bottomPanelHeight: deviceHeight * notification.extent,
+                  );
+                  _updatePrincipalPoint(
+                    bottomPanelHeight: deviceHeight * notification.extent,
+                  );
                   _updateWatermarkPosition(margin: notification.extent);
                 });
               });
@@ -258,39 +292,43 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
               initialChildSize: _initBottomSheetExtent,
               minChildSize: _minBottomSheetExtent,
               maxChildSize: _maxBottomSheetExtent,
-              builder: (BuildContext context, ScrollController scrollController) {
-                return SafeArea(
-                  child: CustomScrollView(
-                    controller: scrollController,
-                    semanticChildCount: _maneuvers.length,
-                    slivers: [
-                      SliverPersistentHeader(
-                        pinned: true,
-                        delegate: _HeaderBuildDelegate(
-                          route: widget.route,
-                          controller: widget.wayPointsController,
-                          extent: _kBottomSheetHeaderSize,
-                        ),
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                    return SafeArea(
+                      child: CustomScrollView(
+                        controller: scrollController,
+                        semanticChildCount: _maneuvers.length,
+                        slivers: [
+                          SliverPersistentHeader(
+                            pinned: true,
+                            delegate: _HeaderBuildDelegate(
+                              route: widget.route,
+                              controller: widget.wayPointsController,
+                              extent: _kBottomSheetHeaderSize,
+                            ),
+                          ),
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final int itemIndex = index ~/ 2;
+                                return index.isEven
+                                    ? _buildManeuverItem(context, itemIndex)
+                                    : Divider(height: 1);
+                              },
+                              semanticIndexCallback:
+                                  (Widget widget, int localIndex) {
+                                    if (localIndex.isEven) {
+                                      return localIndex ~/ 2;
+                                    }
+                                    return null;
+                                  },
+                              childCount: _maneuvers.length * 2 - 1,
+                            ),
+                          ),
+                        ],
                       ),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final int itemIndex = index ~/ 2;
-                            return index.isEven ? _buildManeuverItem(context, itemIndex) : Divider(height: 1);
-                          },
-                          semanticIndexCallback: (Widget widget, int localIndex) {
-                            if (localIndex.isEven) {
-                              return localIndex ~/ 2;
-                            }
-                            return null;
-                          },
-                          childCount: _maneuvers.length * 2 - 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
             ),
           ),
         ),
@@ -301,11 +339,13 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
             options: options,
             onMapCreated: (HereMapController mapController) {
               _hereMapController = mapController;
-              CustomMapStyleSettings customMapStyleSettings = Provider.of<CustomMapStyleSettings>(
-                context,
-                listen: false,
+              CustomMapStyleSettings customMapStyleSettings =
+                  Provider.of<CustomMapStyleSettings>(context, listen: false);
+              Util.loadMapScene(
+                customMapStyleSettings,
+                _hereMapController,
+                _onMapSceneLoaded,
               );
-              Util.loadMapScene(customMapStyleSettings, _hereMapController, _onMapSceneLoaded);
             },
           ),
         ),
@@ -332,34 +372,39 @@ class _HeaderBuildDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => extent;
 
   @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => true;
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      true;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) => Material(
-        color: Theme.of(context).cardColor,
-        elevation: shrinkOffset == 0 ? 0 : 2,
-        child: Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: UIStyle.contentMarginLarge,
-                right: UIStyle.contentMarginLarge,
-              ),
-              child: IconButton(
-                icon: HdsIconWidget(HdsAssetsPaths.chevronLeftIcon),
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
-            ),
-            Expanded(
-              child: RouteInfo(
-                route: route,
-                onNavigation: () => Navigator.of(context).pushNamed(
-                  NavigationScreen.navRoute,
-                  arguments: [route, controller.value],
-                ),
-              ),
-            ),
-          ],
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => Material(
+    color: Theme.of(context).cardColor,
+    elevation: shrinkOffset == 0 ? 0 : 2,
+    child: Row(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            left: UIStyle.contentMarginLarge,
+            right: UIStyle.contentMarginLarge,
+          ),
+          child: IconButton(
+            icon: HdsIconWidget(HdsAssetsPaths.chevronLeftIcon),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
         ),
-      );
+        Expanded(
+          child: RouteInfo(
+            route: route,
+            onNavigation: () => Navigator.of(context).pushNamed(
+              NavigationScreen.navRoute,
+              arguments: [route, controller.value],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

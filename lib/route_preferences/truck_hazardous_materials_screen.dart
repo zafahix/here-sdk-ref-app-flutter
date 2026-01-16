@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,9 @@ import 'route_preferences_model.dart';
 class TruckHazardousMaterialsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final TruckOptions truckOptions = context.select((RoutePreferencesModel model) => model.truckOptions);
+    final TruckOptions truckOptions = context.select(
+      (RoutePreferencesModel model) => model.truckOptions,
+    );
     LinkedHashMap<String, Transport.HazardousMaterial> hazardousMaterialsMap =
         EnumStringHelper.sortedHazardousMaterialsMap(context);
 
@@ -48,10 +50,15 @@ class TruckHazardousMaterialsScreen extends StatelessWidget {
           children: hazardousMaterialsMap.keys.map((String key) {
             return CheckboxListTile(
               title: Text(key),
-              value: truckOptions.hazardousMaterials.contains(hazardousMaterialsMap[key]),
+              value: truckOptions.hazardousMaterials.contains(
+                hazardousMaterialsMap[key],
+              ),
               onChanged: (bool? enable) {
-                Transport.HazardousMaterial changedFeature = hazardousMaterialsMap[key]!;
-                List<Transport.HazardousMaterial> updatedFeatures = List.from(truckOptions.hazardousMaterials);
+                Transport.HazardousMaterial changedFeature =
+                    hazardousMaterialsMap[key]!;
+                List<Transport.HazardousMaterial> updatedFeatures = List.from(
+                  truckOptions.hazardousMaterials,
+                );
                 if (enable ?? false) {
                   updatedFeatures.add(changedFeature);
                 } else {
@@ -65,7 +72,8 @@ class TruckHazardousMaterialsScreen extends StatelessWidget {
                   ..truckSpecifications = truckOptions.truckSpecifications
                   ..linkTunnelCategory = truckOptions.linkTunnelCategory
                   ..hazardousMaterials = updatedFeatures;
-                context.read<RoutePreferencesModel>().truckOptions = newTruckOptions;
+                context.read<RoutePreferencesModel>().truckOptions =
+                    newTruckOptions;
               },
             );
           }).toList(),

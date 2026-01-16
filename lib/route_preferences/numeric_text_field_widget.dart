@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,11 +50,15 @@ class NumericTextField extends StatelessWidget {
       decoration: UIStyle.roundedRectDecoration(),
       child: TextFormField(
         initialValue: initialValue ?? "",
-        keyboardType: isInteger ? TextInputType.number : TextInputType.numberWithOptions(decimal: true),
+        keyboardType: isInteger
+            ? TextInputType.number
+            : TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
           hintText: hintText ?? "",
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: UIStyle.contentMarginMedium),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: UIStyle.contentMarginMedium,
+          ),
         ),
         onChanged: onChanged,
       ),

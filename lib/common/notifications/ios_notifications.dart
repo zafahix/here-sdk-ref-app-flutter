@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 HERE Europe B.V.
+ * Copyright (C) 2024-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,9 @@ class IosNotificationsManager implements NotificationsManager {
   @override
   Future<bool?> requestNotificationPermissions() async {
     return FlutterLocalNotificationsPlugin()
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >()
         ?.requestPermissions();
   }
 
@@ -48,13 +50,16 @@ class IosNotificationsManager implements NotificationsManager {
   Future<void> showNotification(NotificationBody body) async {
     late DarwinNotificationDetails iOSNotificationDetails;
     try {
-      final String savedImagePath = await FileUtility.saveManeuverImageFromBundle(body.imagePath);
+      final String savedImagePath =
+          await FileUtility.saveManeuverImageFromBundle(body.imagePath);
       iOSNotificationDetails = DarwinNotificationDetails(
         presentSound: body.presentSound,
         attachments: [DarwinNotificationAttachment(savedImagePath)],
       );
     } catch (_) {
-      iOSNotificationDetails = DarwinNotificationDetails(presentSound: body.presentSound);
+      iOSNotificationDetails = DarwinNotificationDetails(
+        presentSound: body.presentSound,
+      );
     }
 
     var platformChannelSpecifics = NotificationDetails(

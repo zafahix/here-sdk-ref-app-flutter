@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,10 @@ class PositioningEngine {
   static const int _androidApiLevel30 = 30;
   LocationEngine? _locationEngine;
 
-  StreamController<Location> _locationUpdatesController = StreamController.broadcast();
-  StreamController<LocationEngineStatus> _locationEngineStatusController = StreamController.broadcast();
+  StreamController<Location> _locationUpdatesController =
+      StreamController.broadcast();
+  StreamController<LocationEngineStatus> _locationEngineStatusController =
+      StreamController.broadcast();
 
   /// Initializes the location engine.
   Future initLocationEngine({required BuildContext context}) async {
@@ -50,16 +52,19 @@ class PositioningEngine {
   Location? get lastKnownLocation => _locationEngine?.lastKnownLocation;
 
   /// Gets the state of the location engine.
-  bool get isLocationEngineStarted => _locationEngine != null ? _locationEngine!.isStarted : false;
+  bool get isLocationEngineStarted =>
+      _locationEngine != null ? _locationEngine!.isStarted : false;
 
   /// Gets stream with location updates.
   Stream<Location> get getLocationUpdates => _locationUpdatesController.stream;
 
   /// Gets stream with location engine status updates.
-  Stream<LocationEngineStatus> get getLocationEngineStatusUpdates => _locationEngineStatusController.stream;
+  Stream<LocationEngineStatus> get getLocationEngineStatusUpdates =>
+      _locationEngineStatusController.stream;
 
   /// Returns [true] by check if permission location service status is enabled.
-  Future<bool> get _didLocationServicesEnabled => Permission.location.serviceStatus.isEnabled;
+  Future<bool> get _didLocationServicesEnabled =>
+      Permission.location.serviceStatus.isEnabled;
 
   /// This flag helps to request the location permission, when location service status is enabled.
   bool _didLocationPermissionsRequested = false;
@@ -70,7 +75,10 @@ class PositioningEngine {
     ///
     /// This check determines whether the HERE Privacy Notice dialog has already been shown.
     /// Defaults to false if the key does not exist (e.g., on first app launch).
-    if (!Provider.of<AppPreferences>(context, listen: false).isHerePrivacyDialogShown) {
+    if (!Provider.of<AppPreferences>(
+      context,
+      listen: false,
+    ).isHerePrivacyDialogShown) {
       // Show the dialog if it hasn't been shown before.
       await showHerePrivacyDialog(context);
     }
@@ -80,10 +88,13 @@ class PositioningEngine {
     // Check location services status
     if (!didLocationServicesEnabled) {
       _locationEngineStatusController.add(LocationEngineStatus.notAllowed);
-    } else if (didLocationServicesEnabled && !await _requestLocationPermissions()) {
+    } else if (didLocationServicesEnabled &&
+        !await _requestLocationPermissions()) {
       _didLocationPermissionsRequested = true;
       // Request location permission on engine creation.
-      _locationEngineStatusController.add(LocationEngineStatus.missingPermissions);
+      _locationEngineStatusController.add(
+        LocationEngineStatus.missingPermissions,
+      );
     } else {
       await _createLocationEngineIfPermissionsGranted();
     }
@@ -94,10 +105,13 @@ class PositioningEngine {
   /// Creates a location engine if all necessary permissions are
   /// granted and engine is not already created.
   void _checkLocationServicesPeriodically() {
-    Future.delayed(Duration(seconds: _locationServicePeriodicDurationInSeconds), () async {
-      await _checkLocationServicesStatus();
-      _checkLocationServicesPeriodically();
-    });
+    Future.delayed(
+      Duration(seconds: _locationServicePeriodicDurationInSeconds),
+      () async {
+        await _checkLocationServicesStatus();
+        _checkLocationServicesPeriodically();
+      },
+    );
   }
 
   /// Requests [Permission.location] and [Permission.locationAlways].
@@ -107,14 +121,19 @@ class PositioningEngine {
   /// Returns [false] if location services is not enabled.
   Future<bool> _requestLocationPermissions() async {
     if (await _didLocationServicesEnabled) {
-      final PermissionStatus locationPermission = await Permission.location.request();
-      PermissionStatus locationAlwaysPermission = await Permission.locationAlways.request();
-      if (Platform.isAndroid && await getAndroidApiVersion() >= _androidApiLevel30) {
+      final PermissionStatus locationPermission = await Permission.location
+          .request();
+      PermissionStatus locationAlwaysPermission = await Permission
+          .locationAlways
+          .request();
+      if (Platform.isAndroid &&
+          await getAndroidApiVersion() >= _androidApiLevel30) {
         // Checking background location permission status again because result of request is denied even if user granted
         // this permission (on Android 11). It looks like a permission_handler plugin bug.
         locationAlwaysPermission = await Permission.locationAlways.status;
       }
-      return locationPermission == PermissionStatus.granted && locationAlwaysPermission == PermissionStatus.granted;
+      return locationPermission == PermissionStatus.granted &&
+          locationAlwaysPermission == PermissionStatus.granted;
     } else {
       return false;
     }
@@ -129,11 +148,14 @@ class PositioningEngine {
       return false;
     }
 
-    final bool isLocationPermissionGranted = await Permission.location.isGranted;
-    if (Platform.isAndroid && await getAndroidApiVersion() >= _androidApiLevel30) {
+    final bool isLocationPermissionGranted =
+        await Permission.location.isGranted;
+    if (Platform.isAndroid &&
+        await getAndroidApiVersion() >= _androidApiLevel30) {
       // Checking background location permission status again because result of request is denied even if user granted
       // this permission (on Android 11). It looks like a permission_handler plugin bug.
-      final bool isLocationAlwaysPermissionGranted = await Permission.locationAlways.status.isGranted;
+      final bool isLocationAlwaysPermissionGranted =
+          await Permission.locationAlways.status.isGranted;
       return isLocationPermissionGranted && isLocationAlwaysPermissionGranted;
     }
     return isLocationPermissionGranted;
@@ -143,11 +165,15 @@ class PositioningEngine {
     _locationEngine = LocationEngine();
     _locationUpdatesController.onCancel = () => _locationEngine!.stop();
     _locationEngine!.setBackgroundLocationAllowed(false);
-    _locationEngine!.addLocationListener(LocationListener((location) => _locationUpdatesController.add(location)));
-    _locationEngine!.addLocationStatusListener(LocationStatusListener(
-      (status) => _locationEngineStatusController.add(status),
-      (features) {},
-    ));
+    _locationEngine!.addLocationListener(
+      LocationListener((location) => _locationUpdatesController.add(location)),
+    );
+    _locationEngine!.addLocationStatusListener(
+      LocationStatusListener(
+        (status) => _locationEngineStatusController.add(status),
+        (features) {},
+      ),
+    );
 
     /// Important: The HERE Privacy Notice must be shown and accepted by the user
     /// before starting the LocationEngine. Ensure the FTU/privacy screen is displayed
@@ -177,7 +203,9 @@ class PositioningEngine {
       _didLocationPermissionsRequested = true;
       final isGranted = await _requestLocationPermissions();
       if (!isGranted) {
-        _locationEngineStatusController.add(LocationEngineStatus.missingPermissions);
+        _locationEngineStatusController.add(
+          LocationEngineStatus.missingPermissions,
+        );
       }
     }
   }

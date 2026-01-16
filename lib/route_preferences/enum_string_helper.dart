@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,10 @@ class EnumStringHelper {
 
   /// Returns a map of truck type indices to their capitalized display names.
   static Map<int, String> truckTypeDisplayNames() {
-    return {for (final type in Transport.TruckType.values) type.index: type.name.capitalize()};
+    return {
+      for (final type in Transport.TruckType.values)
+        type.index: type.name.capitalize(),
+    };
   }
 
   /// Returns the mapping of [OptimizationMode] values to the corresponding strings.
@@ -44,7 +47,9 @@ class EnumStringHelper {
           result[value.index] = AppLocalizations.of(context)!.fastestRouteTitle;
           break;
         case OptimizationMode.shortest:
-          result[value.index] = AppLocalizations.of(context)!.shortestRouteTitle;
+          result[value.index] = AppLocalizations.of(
+            context,
+          )!.shortestRouteTitle;
           break;
       }
     }
@@ -60,10 +65,14 @@ class EnumStringHelper {
           result[value.index] = AppLocalizations.of(context)!.unitSystemMetric;
           break;
         case UnitSystem.imperialUk:
-          result[value.index] = AppLocalizations.of(context)!.unitSystemImperialUk;
+          result[value.index] = AppLocalizations.of(
+            context,
+          )!.unitSystemImperialUk;
           break;
         case UnitSystem.imperialUs:
-          result[value.index] = AppLocalizations.of(context)!.unitSystemImperialUs;
+          result[value.index] = AppLocalizations.of(
+            context,
+          )!.unitSystemImperialUs;
           break;
       }
     }
@@ -132,7 +141,10 @@ class EnumStringHelper {
     return result;
   }
 
-  static String roadFeatureNamesToString(BuildContext context, List<RoadFeatures> roadFeatures) {
+  static String roadFeatureNamesToString(
+    BuildContext context,
+    List<RoadFeatures> roadFeatures,
+  ) {
     List<String> result = <String>[];
     sortedRoadFeaturesMap(context).forEach((key, value) {
       if (roadFeatures.contains(value)) result.add(key);
@@ -141,7 +153,9 @@ class EnumStringHelper {
   }
 
   /// Returns the mapping of [RoadFeatures] values to the corresponding strings.
-  static LinkedHashMap<String, RoadFeatures> sortedRoadFeaturesMap(BuildContext context) {
+  static LinkedHashMap<String, RoadFeatures> sortedRoadFeaturesMap(
+    BuildContext context,
+  ) {
     final Map<String, RoadFeatures> result = Map<String, RoadFeatures>();
     AppLocalizations localizations = AppLocalizations.of(context)!;
 
@@ -173,7 +187,11 @@ class EnumStringHelper {
           break;
       }
     }
-    return LinkedHashMap.fromIterable(result.keys.toList()..sort(), key: (k) => k, value: (k) => result[k]!);
+    return LinkedHashMap.fromIterable(
+      result.keys.toList()..sort(),
+      key: (k) => k,
+      value: (k) => result[k]!,
+    );
   }
 
   /// Returns concatenated string of the all values from the [hazardousMaterials] list.
@@ -189,11 +207,14 @@ class EnumStringHelper {
   }
 
   /// Returns the mapping of [HazardousMaterial] values to the corresponding strings.
-  static LinkedHashMap<String, Transport.HazardousMaterial> sortedHazardousMaterialsMap(BuildContext context) {
-    final Map<String, Transport.HazardousMaterial> result = Map<String, Transport.HazardousMaterial>();
+  static LinkedHashMap<String, Transport.HazardousMaterial>
+  sortedHazardousMaterialsMap(BuildContext context) {
+    final Map<String, Transport.HazardousMaterial> result =
+        Map<String, Transport.HazardousMaterial>();
     AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    for (Transport.HazardousMaterial value in Transport.HazardousMaterial.values) {
+    for (Transport.HazardousMaterial value
+        in Transport.HazardousMaterial.values) {
       switch (value) {
         case Transport.HazardousMaterial.explosive:
           result[localizations.hazardousGoodsExplosive] = value;
@@ -230,11 +251,18 @@ class EnumStringHelper {
           break;
       }
     }
-    return LinkedHashMap.fromIterable(result.keys.toList()..sort(), key: (k) => k, value: (k) => result[k]!);
+    return LinkedHashMap.fromIterable(
+      result.keys.toList()..sort(),
+      key: (k) => k,
+      value: (k) => result[k]!,
+    );
   }
 
   /// Returns concatenated string of the all values from the [countryCodes] list.
-  static String countryCodeNamesToString(BuildContext context, List<CountryCode> countryCodes) {
+  static String countryCodeNamesToString(
+    BuildContext context,
+    List<CountryCode> countryCodes,
+  ) {
     List<String> result = <String>[];
     countryCodesMap(context).forEach((key, value) {
       if (countryCodes.contains(value)) result.add(key);

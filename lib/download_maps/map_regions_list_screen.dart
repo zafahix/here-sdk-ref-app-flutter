@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,7 @@ class MapRegionsListScreen extends StatefulWidget {
   /// List of regions to display.
   final List<Region> regions;
 
-  MapRegionsListScreen({
-    Key? key,
-    required this.regions,
-  }) : super(key: key);
+  MapRegionsListScreen({Key? key, required this.regions}) : super(key: key);
 
   @override
   _MapRegionsListScreenState createState() => _MapRegionsListScreenState();
@@ -59,18 +56,18 @@ class MapRegionsListScreen extends StatefulWidget {
 class _MapRegionsListScreenState extends State<MapRegionsListScreen> {
   @override
   Widget build(BuildContext context) => Consumer<MapLoaderController>(
-        builder: (context, model, child) => Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            leading: IconButton(
-              icon: HdsIconWidget(HdsAssetsPaths.arrowLeftIcon),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            title: Text(AppLocalizations.of(context)!.downloadMapsTitle),
-          ),
-          body: _buildRegionsList(context),
+    builder: (context, model, child) => Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: HdsIconWidget(HdsAssetsPaths.arrowLeftIcon),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-      );
+        title: Text(AppLocalizations.of(context)!.downloadMapsTitle),
+      ),
+      body: _buildRegionsList(context),
+    ),
+  );
 
   Widget _buildRegionsList(context) {
     return ListView.separated(
@@ -96,7 +93,9 @@ class _MapRegionsListScreenState extends State<MapRegionsListScreen> {
     }
     bool hasChildren = region.childRegions != null;
     int? progress = controller.getDownloadProgress(region.regionId);
-    bool hasParentRegion = widget.regions.any((element) => element is _ParentRegion);
+    bool hasParentRegion = widget.regions.any(
+      (element) => element is _ParentRegion,
+    );
     return MapRegionTile(
       region: widget.regions[index],
       installedRegion: installedRegion,
@@ -106,10 +105,10 @@ class _MapRegionsListScreenState extends State<MapRegionsListScreen> {
       onTap: () => progress != null
           ? _cancelDownload(controller, region)
           : hasChildren && region is! _ParentRegion
-              ? _openChildRegions(region)
-              : installedRegion?.status != InstalledRegionStatus.installed
-                  ? controller.downloadRegion(region.regionId)
-                  : null,
+          ? _openChildRegions(region)
+          : installedRegion?.status != InstalledRegionStatus.installed
+          ? controller.downloadRegion(region.regionId)
+          : null,
     );
   }
 
@@ -126,11 +125,13 @@ class _MapRegionsListScreenState extends State<MapRegionsListScreen> {
   }
 
   void _openChildRegions(Region region) {
-    List<Region> regions = [_ParentRegion.fromRegion(region), ...?region.childRegions];
+    List<Region> regions = [
+      _ParentRegion.fromRegion(region),
+      ...?region.childRegions,
+    ];
 
-    Navigator.of(context).pushNamed(
-      MapRegionsListScreen.navRoute,
-      arguments: [regions],
-    );
+    Navigator.of(
+      context,
+    ).pushNamed(MapRegionsListScreen.navRoute, arguments: [regions]);
   }
 }

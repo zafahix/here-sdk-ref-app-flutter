@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,13 @@ import 'ui_style.dart';
 class FileUtility {
   static const String _sceneDirectory = 'scenes';
 
-  static Future _createDirsIfNotExist(String docsDirectory, String imagesDirectory) async {
-    final Directory maneuversDirectory = Directory("$docsDirectory/$imagesDirectory");
+  static Future _createDirsIfNotExist(
+    String docsDirectory,
+    String imagesDirectory,
+  ) async {
+    final Directory maneuversDirectory = Directory(
+      "$docsDirectory/$imagesDirectory",
+    );
     if (!(await maneuversDirectory.exists())) {
       await maneuversDirectory.create(recursive: true);
     }
@@ -97,7 +102,9 @@ class FileUtility {
       final Directory scenesDirectory = await _scenesDirectory();
       await deleteScenesDirectory();
       final Directory newDirectory = await scenesDirectory.create();
-      final File file = File('${newDirectory.path}/${filePath.split('/').last}');
+      final File file = File(
+        '${newDirectory.path}/${filePath.split('/').last}',
+      );
       // Write the file
       return file.writeAsBytes(File(filePath).readAsBytesSync());
     } catch (e) {
@@ -126,16 +133,18 @@ class FileUtility {
     final Brightness systemBrightness =
         WidgetsBinding.instance.platformDispatcher.platformBrightness;
 
-    final Color svgColor =
-        systemBrightness == Brightness.dark ? Colors.white : Colors.black;
+    final Color svgColor = systemBrightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
 
     final PictureInfo pictureInfo = await vg.loadPicture(
       SvgStringLoader(svgString, colorMapper: _SvgColorMapper(svgColor)),
       context,
     );
     final ui.Image image = await pictureInfo.picture.toImage(width, height);
-    final ByteData? byteData =
-        await image.toByteData(format: ui.ImageByteFormat.png);
+    final ByteData? byteData = await image.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
     if (byteData == null) {
       debugPrint('Error: Unable to convert SVG to PNG');
     }
@@ -148,7 +157,12 @@ class _SvgColorMapper implements ColorMapper {
   final ui.Color substituteColor;
 
   @override
-  ui.Color substitute(String? id, String elementName, String attributeName, ui.Color color) {
+  ui.Color substitute(
+    String? id,
+    String elementName,
+    String attributeName,
+    ui.Color color,
+  ) {
     return substituteColor;
   }
 }

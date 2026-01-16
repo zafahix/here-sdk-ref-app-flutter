@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 HERE Europe B.V.
+ * Copyright (C) 2025-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,9 @@ Future<void> createSDKNativeEngine({
     print('SDKNativeEngine created successfully!');
     onSuccess?.call();
   } on Exception catch (e) {
-    final String error = e is InstantiationException ? '${e.error}' : e.toString();
+    final String error = e is InstantiationException
+        ? '${e.error}'
+        : e.toString();
     print('Failed to create SDKNativeEngine: $error');
     onFailure?.call(error);
   }

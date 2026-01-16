@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,12 @@ import '../route_preferences_model.dart';
 class RoadFeaturesAvoidanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final AvoidanceOptions avoidanceOptions =
-        context.select((RoutePreferencesModel model) => model.sharedAvoidanceOptions);
+    final AvoidanceOptions avoidanceOptions = context.select(
+      (RoutePreferencesModel model) => model.sharedAvoidanceOptions,
+    );
 
-    LinkedHashMap<String, RoadFeatures> roadFeaturesMap = EnumStringHelper.sortedRoadFeaturesMap(context);
+    LinkedHashMap<String, RoadFeatures> roadFeaturesMap =
+        EnumStringHelper.sortedRoadFeaturesMap(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -48,13 +50,17 @@ class RoadFeaturesAvoidanceScreen extends StatelessWidget {
           children: roadFeaturesMap.keys.map((String key) {
             return CheckboxListTile(
               title: Text(key),
-              value: avoidanceOptions.roadFeatures.contains(roadFeaturesMap[key]),
+              value: avoidanceOptions.roadFeatures.contains(
+                roadFeaturesMap[key],
+              ),
               onChanged: (bool? enable) {
                 RoadFeatures? changedFeature = roadFeaturesMap[key];
                 if (changedFeature == null) {
                   return;
                 }
-                List<RoadFeatures> updatedFeatures = List.from(avoidanceOptions.roadFeatures);
+                List<RoadFeatures> updatedFeatures = List.from(
+                  avoidanceOptions.roadFeatures,
+                );
                 if (enable ?? false) {
                   updatedFeatures.add(changedFeature);
                 } else {
@@ -63,10 +69,12 @@ class RoadFeaturesAvoidanceScreen extends StatelessWidget {
                 final AvoidanceOptions newOptions = AvoidanceOptions()
                   ..roadFeatures = updatedFeatures
                   ..countries = avoidanceOptions.countries
-                  ..avoidBoundingBoxAreasOptions = avoidanceOptions.avoidBoundingBoxAreasOptions
+                  ..avoidBoundingBoxAreasOptions =
+                      avoidanceOptions.avoidBoundingBoxAreasOptions
                   ..zoneCategories = avoidanceOptions.zoneCategories
                   ..segments = avoidanceOptions.segments;
-                context.read<RoutePreferencesModel>().sharedAvoidanceOptions = newOptions;
+                context.read<RoutePreferencesModel>().sharedAvoidanceOptions =
+                    newOptions;
               },
             );
           }).toList(),

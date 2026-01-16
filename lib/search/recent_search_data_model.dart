@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,8 @@ class RecentSearchDataModel extends ChangeNotifier {
   }
 
   Future<void> _init() async {
-    final String createTableSQL = "CREATE TABLE $_kTableName("
+    final String createTableSQL =
+        "CREATE TABLE $_kTableName("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "$_kTitleField TEXT, "
         "$_kPlaceIdField TEXT, "
@@ -65,7 +66,9 @@ class RecentSearchDataModel extends ChangeNotifier {
     _db = await openDatabase(
       join(dbPath, _kDbName),
       onCreate: (db, version) => db.execute(createTableSQL),
-      onUpgrade: (db, oldVersion, newVersion) => db.execute(deleteTableSQL).then((value) => db.execute(createTableSQL)),
+      onUpgrade: (db, oldVersion, newVersion) => db
+          .execute(deleteTableSQL)
+          .then((value) => db.execute(createTableSQL)),
       version: 2,
     );
 
@@ -75,9 +78,7 @@ class RecentSearchDataModel extends ChangeNotifier {
   Future<int> _updateTimeStamp(int id) {
     return _db.update(
       _kTableName,
-      {
-        _kTimeStampField: DateTime.now().millisecondsSinceEpoch,
-      },
+      {_kTimeStampField: DateTime.now().millisecondsSinceEpoch},
       where: "id = ?",
       whereArgs: [id],
     );
@@ -95,14 +96,10 @@ class RecentSearchDataModel extends ChangeNotifier {
     if (queryResult.isNotEmpty) {
       await _updateTimeStamp(queryResult.first["id"] as int);
     } else {
-      await _db.insert(
-        _kTableName,
-        {
-          _kTitleField: text,
-          _kTimeStampField: DateTime.now().millisecondsSinceEpoch,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await _db.insert(_kTableName, {
+        _kTitleField: text,
+        _kTimeStampField: DateTime.now().millisecondsSinceEpoch,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
     }
     notifyListeners();
   }
@@ -119,15 +116,11 @@ class RecentSearchDataModel extends ChangeNotifier {
     if (queryResult.isNotEmpty) {
       await _updateTimeStamp(queryResult.first["id"] as int);
     } else {
-      await _db.insert(
-        _kTableName,
-        {
-          _kPlaceIdField: place.id,
-          _kPlaceField: place.serializeCompact(),
-          _kTimeStampField: DateTime.now().millisecondsSinceEpoch,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await _db.insert(_kTableName, {
+        _kPlaceIdField: place.id,
+        _kPlaceField: place.serializeCompact(),
+        _kTimeStampField: DateTime.now().millisecondsSinceEpoch,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
     }
     notifyListeners();
   }
@@ -135,21 +128,26 @@ class RecentSearchDataModel extends ChangeNotifier {
   /// Removes an element from the list.
   Future<void> delete(int id) async {
     await _initFuture;
-    await _db.delete(
-      _kTableName,
-      where: "id = ?",
-      whereArgs: [id],
-    );
+    await _db.delete(_kTableName, where: "id = ?", whereArgs: [id]);
   }
 
   /// Returns recently searched items list.
   Future<List<RecentSearchItem>> getData() async {
     await _initFuture;
-    List<Map<String, dynamic>> results = await _db.query(_kTableName, orderBy: "$_kTimeStampField DESC");
+    List<Map<String, dynamic>> results = await _db.query(
+      _kTableName,
+      orderBy: "$_kTimeStampField DESC",
+    );
     return results.map((e) {
       String? placeString = e[_kPlaceField] as String?;
-      Place? place = placeString != null ? Place.deserialize(placeString) : null;
-      return RecentSearchItem(e["id"] as int, e[_kTitleField] as String?, place);
+      Place? place = placeString != null
+          ? Place.deserialize(placeString)
+          : null;
+      return RecentSearchItem(
+        e["id"] as int,
+        e[_kTitleField] as String?,
+        place,
+      );
     }).toList();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,12 +74,14 @@ class MapRegionTile extends StatelessWidget {
     late String subtitle;
 
     if (hasChildren && !isHeader) {
-      subtitle = Util.formatString(appLocalizations.mapRegionChildrenNumberText, [region.childRegions!.length]);
-    } else if (isHeader) {
       subtitle = Util.formatString(
-        appLocalizations.sizeOfWholeAreaOfRegion,
-        [Util.makeStorageSizeString(context, region.sizeOnDiskInBytes)],
+        appLocalizations.mapRegionChildrenNumberText,
+        [region.childRegions!.length],
       );
+    } else if (isHeader) {
+      subtitle = Util.formatString(appLocalizations.sizeOfWholeAreaOfRegion, [
+        Util.makeStorageSizeString(context, region.sizeOnDiskInBytes),
+      ]);
     } else {
       subtitle = Util.makeStorageSizeString(context, region.sizeOnDiskInBytes);
     }
@@ -88,19 +90,20 @@ class MapRegionTile extends StatelessWidget {
     if (!hideTrailingIcon) {
       if (downloadProgress != null) {
         if (downloadProgress! >= 0) {
-          tileIcon = HdsIconWidget.small(
-            HdsAssetsPaths.crossIcon,
-          );
+          tileIcon = HdsIconWidget.small(HdsAssetsPaths.crossIcon);
         }
       } else {
-        tileIcon = icon ??
+        tileIcon =
+            icon ??
             HdsIconWidget(
               installedRegion?.status == InstalledRegionStatus.installed
                   ? HdsAssetsPaths.confirmSolidIcon
                   : hasChildren && !isHeader
-                      ? HdsAssetsPaths.arrowRightIcon
-                      : HdsAssetsPaths.downloadIcon,
-              color: installedRegion?.status == InstalledRegionStatus.installed ? Colors.green : null,
+                  ? HdsAssetsPaths.arrowRightIcon
+                  : HdsAssetsPaths.downloadIcon,
+              color: installedRegion?.status == InstalledRegionStatus.installed
+                  ? Colors.green
+                  : null,
             );
       }
     }
@@ -108,11 +111,7 @@ class MapRegionTile extends StatelessWidget {
     return ListTile(
       minLeadingWidth: 0,
       visualDensity: VisualDensity(vertical: -4),
-      leading: isChild
-          ? Container(
-              width: UIStyle.contentMarginMedium,
-            )
-          : null,
+      leading: isChild ? Container(width: UIStyle.contentMarginMedium) : null,
       title: Text(
         region.name,
         style: TextStyle(
@@ -122,18 +121,13 @@ class MapRegionTile extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: colorScheme.onSecondary,
-            ),
-          ),
-          if (downloadProgress == null && installedRegion?.status == InstalledRegionStatus.pending && !hasChildren)
+          Text(subtitle, style: TextStyle(color: colorScheme.onSecondary)),
+          if (downloadProgress == null &&
+              installedRegion?.status == InstalledRegionStatus.pending &&
+              !hasChildren)
             Text(
               appLocalizations.incompleteDownloadMessage,
-              style: TextStyle(
-                color: colorScheme.onSecondary,
-              ),
+              style: TextStyle(color: colorScheme.onSecondary),
             ),
         ],
       ),
@@ -148,9 +142,7 @@ class MapRegionTile extends StatelessWidget {
                 color: colorScheme.secondary,
                 backgroundColor: Theme.of(context).dividerColor,
               ),
-            Center(
-              child: tileIcon,
-            ),
+            Center(child: tileIcon),
           ],
         ),
       ),

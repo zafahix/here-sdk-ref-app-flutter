@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,18 +34,18 @@ class NoLocationWarning extends StatelessWidget {
   final VoidCallback onPressed;
 
   /// Constructs a widget.
-  NoLocationWarning({
-    Key? key,
-    required this.onPressed,
-  }) : super(key: key);
+  NoLocationWarning({Key? key, required this.onPressed}) : super(key: key);
 
   Future<String> _warningMessage(BuildContext context) async {
     if (!await Permission.location.serviceStatus.isEnabled) {
       return AppLocalizations.of(context)!.noLocationWarning;
     }
-    final PermissionStatus locationPermission = await Permission.location.status;
-    final PermissionStatus locationAlwaysPermission = await Permission.locationAlways.status;
-    if (locationPermission == PermissionStatus.granted && locationAlwaysPermission != PermissionStatus.granted) {
+    final PermissionStatus locationPermission =
+        await Permission.location.status;
+    final PermissionStatus locationAlwaysPermission =
+        await Permission.locationAlways.status;
+    if (locationPermission == PermissionStatus.granted &&
+        locationAlwaysPermission != PermissionStatus.granted) {
       return AppLocalizations.of(context)!.backgroundPositioningWarning;
     } else {
       return AppLocalizations.of(context)!.noLocationWarning;
@@ -60,7 +60,9 @@ class NoLocationWarning extends StatelessWidget {
       bottom: _kOverlayPosition,
       child: Material(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(UIStyle.popupsBorderRadius)),
+          borderRadius: BorderRadius.all(
+            Radius.circular(UIStyle.popupsBorderRadius),
+          ),
         ),
         color: UIStyle.noLocationWarningBackgroundColor,
         elevation: 2,

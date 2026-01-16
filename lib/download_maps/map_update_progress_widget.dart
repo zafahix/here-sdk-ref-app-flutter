@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,69 +28,76 @@ import 'map_loader_controller.dart';
 
 /// A widget that represents the progress of the map update.
 class MapUpdateProgress extends StatelessWidget {
-  MapUpdateProgress({
-    Key? key,
-  }) : super(key: key);
+  MapUpdateProgress({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Consumer<MapLoaderController>(
-        builder: (context, controller, child) => Padding(
-          padding: EdgeInsets.all(UIStyle.contentMarginHuge),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    builder: (context, controller, child) => Padding(
+      padding: EdgeInsets.all(UIStyle.contentMarginHuge),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalizations.of(context)!.updatingMapTitle,
+            style: TextStyle(
+              fontSize: UIStyle.bigFontSize,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: UIStyle.contentMarginMedium,
+            ),
+            child: LinearProgressIndicator(
+              value: controller.mapUpdateState != MapUpdateState.cancelling
+                  ? controller.mapUpdateProgress! / 100
+                  : null,
+              valueColor: AlwaysStoppedAnimation(
+                Theme.of(context).colorScheme.secondary,
+              ),
+              backgroundColor: Theme.of(context).dividerColor,
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                AppLocalizations.of(context)!.updatingMapTitle,
-                style: TextStyle(fontSize: UIStyle.bigFontSize, fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: UIStyle.contentMarginMedium,
+              Spacer(),
+              if (controller.mapUpdateState == MapUpdateState.progress)
+                _buildButton(
+                  context,
+                  HdsIconWidget(HdsAssetsPaths.pauseIcon),
+                  () => controller.pauseMapUpdate(),
                 ),
-                child: LinearProgressIndicator(
-                  value: controller.mapUpdateState != MapUpdateState.cancelling
-                      ? controller.mapUpdateProgress! / 100
-                      : null,
-                  valueColor: AlwaysStoppedAnimation(Theme.of(context).colorScheme.secondary),
-                  backgroundColor: Theme.of(context).dividerColor,
+              if (controller.mapUpdateState == MapUpdateState.paused)
+                _buildButton(
+                  context,
+                  HdsIconWidget(HdsAssetsPaths.playIcon),
+                  () => controller.resumeMapUpdate(),
                 ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Spacer(),
-                  if (controller.mapUpdateState == MapUpdateState.progress)
-                    _buildButton(context, HdsIconWidget(HdsAssetsPaths.pauseIcon), () => controller.pauseMapUpdate()),
-                  if (controller.mapUpdateState == MapUpdateState.paused)
-                    _buildButton(context, HdsIconWidget(HdsAssetsPaths.playIcon), () => controller.resumeMapUpdate()),
-                  Container(
-                    width: UIStyle.contentMarginMedium,
-                  ),
-                  if (controller.mapUpdateState != MapUpdateState.cancelling)
-                    _buildButton(
-                        context,
-                        HdsIconWidget(
-                          HdsAssetsPaths.crossIcon,
-                        ),
-                        () => controller.cancelMapUpdate()),
-                ],
-              ),
-              Divider(),
+              Container(width: UIStyle.contentMarginMedium),
+              if (controller.mapUpdateState != MapUpdateState.cancelling)
+                _buildButton(
+                  context,
+                  HdsIconWidget(HdsAssetsPaths.crossIcon),
+                  () => controller.cancelMapUpdate(),
+                ),
             ],
           ),
-        ),
-      );
+          Divider(),
+        ],
+      ),
+    ),
+  );
 
-  Widget _buildButton(BuildContext context, Widget icon, VoidCallback onTap) => ClipOval(
+  Widget _buildButton(BuildContext context, Widget icon, VoidCallback onTap) =>
+      ClipOval(
         child: Material(
           child: Ink(
             width: UIStyle.smallButtonHeight,
             height: UIStyle.smallButtonHeight,
             color: Theme.of(context).dividerColor,
             child: InkWell(
-              child: Center(
-                child: icon,
-              ),
+              child: Center(child: icon),
               onTap: onTap,
             ),
           ),

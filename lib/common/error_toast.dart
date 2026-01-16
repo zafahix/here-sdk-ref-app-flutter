@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,7 @@ class ErrorToaster {
   static void makeToast(BuildContext context, String message) {
     _hide();
     _toastEntry = _getOverlayEntry(message);
-    _displayToast(
-      context,
-      entry: _toastEntry,
-    );
+    _displayToast(context, entry: _toastEntry);
   }
 
   static void _hide() {

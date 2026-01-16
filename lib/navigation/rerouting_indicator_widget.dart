@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,9 @@ class ReroutingIndicator extends StatelessWidget {
               height: UIStyle.bigButtonHeight,
               child: CircularProgressIndicator(
                 backgroundColor: UIStyle.reroutingProgressBackgroundColor,
-                valueColor: AlwaysStoppedAnimation<Color>(UIStyle.reroutingProgressColor),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  UIStyle.reroutingProgressColor,
+                ),
               ),
             ),
           ),

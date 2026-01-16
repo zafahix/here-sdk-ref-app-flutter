@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,39 +43,65 @@ class RouteOptionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final RouteOptions routeOptions = context.select((RoutePreferencesModel model) => model.sharedRouteOptions);
+    final RouteOptions routeOptions = context.select(
+      (RoutePreferencesModel model) => model.sharedRouteOptions,
+    );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        PreferencesSectionTitle(title: AppLocalizations.of(context)!.routeOptionsTitle),
-        PreferencesRowTitle(title: AppLocalizations.of(context)!.routeAlternativesTitle),
+        PreferencesSectionTitle(
+          title: AppLocalizations.of(context)!.routeOptionsTitle,
+        ),
+        PreferencesRowTitle(
+          title: AppLocalizations.of(context)!.routeAlternativesTitle,
+        ),
         NumericTextField(
           initialValue: routeOptions.alternatives.toString(),
           isInteger: true,
           hintText: _alternativesRangeHint,
-          onChanged: (text) => context.read<RoutePreferencesModel>().sharedRouteOptions = RouteOptions(
-            routeOptions.optimizationMode,
-            int.tryParse(text) ?? 0,
-            routeOptions.departureTime,
-          ),
+          onChanged: (text) =>
+              context
+                  .read<RoutePreferencesModel>()
+                  .sharedRouteOptions = RouteOptions(
+                routeOptions.optimizationMode,
+                int.tryParse(text) ?? 0,
+                routeOptions.departureTime,
+              ),
         ),
-        PreferencesRowTitle(title: AppLocalizations.of(context)!.departureTimeTitle),
+        PreferencesRowTitle(
+          title: AppLocalizations.of(context)!.departureTimeTitle,
+        ),
         Container(
           decoration: UIStyle.roundedRectDecoration(),
           child: InkWell(
             onTap: () async {
-              DateTime? newDate = await (Platform.isIOS ? _selectDateTimeCupertino(context) : _selectDateTime(context));
+              DateTime? newDate = await (Platform.isIOS
+                  ? _selectDateTimeCupertino(context)
+                  : _selectDateTime(context));
               if (newDate != null)
-                context.read<RoutePreferencesModel>().sharedRouteOptions =
-                    RouteOptions(routeOptions.optimizationMode, routeOptions.alternatives, newDate);
+                context
+                    .read<RoutePreferencesModel>()
+                    .sharedRouteOptions = RouteOptions(
+                  routeOptions.optimizationMode,
+                  routeOptions.alternatives,
+                  newDate,
+                );
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Padding(
-                    padding: const EdgeInsets.only(left: UIStyle.contentMarginMedium),
-                    child: Text(Util.stringFromDateTime(context, routeOptions.departureTime))),
+                  padding: const EdgeInsets.only(
+                    left: UIStyle.contentMarginMedium,
+                  ),
+                  child: Text(
+                    Util.stringFromDateTime(
+                      context,
+                      routeOptions.departureTime,
+                    ),
+                  ),
+                ),
                 Visibility(
                   maintainSize: true,
                   maintainAnimation: true,
@@ -86,29 +112,37 @@ class RouteOptionsWidget extends StatelessWidget {
                       HdsAssetsPaths.crossIcon,
                       color: UIStyle.optionsBorderColor,
                     ),
-                    onPressed: () => context.read<RoutePreferencesModel>().sharedRouteOptions = RouteOptions(
-                      routeOptions.optimizationMode,
-                      routeOptions.alternatives,
-                      null,
-                    ),
+                    onPressed: () =>
+                        context
+                            .read<RoutePreferencesModel>()
+                            .sharedRouteOptions = RouteOptions(
+                          routeOptions.optimizationMode,
+                          routeOptions.alternatives,
+                          null,
+                        ),
                   ),
                 ),
               ],
             ),
           ),
         ),
-        PreferencesRowTitle(title: AppLocalizations.of(context)!.optimizationModeTitle),
+        PreferencesRowTitle(
+          title: AppLocalizations.of(context)!.optimizationModeTitle,
+        ),
         Container(
           decoration: UIStyle.roundedRectDecoration(),
           child: DropdownButtonHideUnderline(
             child: DropdownWidget(
               data: EnumStringHelper.routeOptimizationModeMap(context),
               selectedValue: routeOptions.optimizationMode.index,
-              onChanged: (mode) => context.read<RoutePreferencesModel>().sharedRouteOptions = RouteOptions(
-                OptimizationMode.values[mode],
-                routeOptions.alternatives,
-                routeOptions.departureTime,
-              ),
+              onChanged: (mode) =>
+                  context
+                      .read<RoutePreferencesModel>()
+                      .sharedRouteOptions = RouteOptions(
+                    OptimizationMode.values[mode],
+                    routeOptions.alternatives,
+                    routeOptions.departureTime,
+                  ),
             ),
           ),
         ),
@@ -163,13 +197,16 @@ class RouteOptionsWidget extends StatelessWidget {
                         fontSize: UIStyle.mediumFontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
               Expanded(
                 child: Container(
-                  child: CupertinoDatePicker(onDateTimeChanged: (DateTime dateTime) => selectedDateTime = dateTime),
+                  child: CupertinoDatePicker(
+                    onDateTimeChanged: (DateTime dateTime) =>
+                        selectedDateTime = dateTime,
+                  ),
                 ),
               ),
               Container(
@@ -192,7 +229,8 @@ class RouteOptionsWidget extends StatelessWidget {
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
-                      onPressed: () => Navigator.of(context).pop(selectedDateTime),
+                      onPressed: () =>
+                          Navigator.of(context).pop(selectedDateTime),
                     ),
                   ],
                 ),
@@ -204,6 +242,12 @@ class RouteOptionsWidget extends StatelessWidget {
     );
     if (result == null) return null;
 
-    return DateTime(result.year, result.month, result.day, result.hour, result.minute);
+    return DateTime(
+      result.year,
+      result.month,
+      result.day,
+      result.hour,
+      result.minute,
+    );
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,20 +58,28 @@ class PreferencesDisclosureRowWidget extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: UIStyle.bigFontSize),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: UIStyle.bigFontSize,
+                      ),
                     ),
                     if (subTitle?.isNotEmpty ?? false)
                       Text(
                         subTitle!,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
                         textAlign: TextAlign.left,
-                      )
+                      ),
                   ],
                 ),
               ),
               IconButton(
-                icon: HdsIconWidget(HdsAssetsPaths.chevronRightIcon, color: Theme.of(context).colorScheme.onSecondary),
+                icon: HdsIconWidget(
+                  HdsAssetsPaths.chevronRightIcon,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
                 onPressed: onPressed,
               ),
             ],

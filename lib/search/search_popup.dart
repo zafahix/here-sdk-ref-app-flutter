@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,12 @@ class _SearchPopupState extends State<_SearchPopup> {
   @override
   void initState() {
     super.initState();
-    _searchEngine = SearchEngineProxy(offline: Provider.of<AppPreferences>(context, listen: false).useAppOffline);
+    _searchEngine = SearchEngineProxy(
+      offline: Provider.of<AppPreferences>(
+        context,
+        listen: false,
+      ).useAppOffline,
+    );
     _lastPosition = widget.currentPosition;
   }
 
@@ -152,7 +157,9 @@ class _SearchPopupState extends State<_SearchPopup> {
                   slivers: [
                     SliverAppBar(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(UIStyle.popupsBorderRadius),
+                        borderRadius: BorderRadius.circular(
+                          UIStyle.popupsBorderRadius,
+                        ),
                       ),
                       leading: Container(),
                       leadingWidth: 0,
@@ -165,9 +172,7 @@ class _SearchPopupState extends State<_SearchPopup> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildSearchHeader(context),
-                          Container(
-                            height: UIStyle.contentMarginMedium,
-                          ),
+                          Container(height: UIStyle.contentMarginMedium),
                           if (widget.currentLocationTitle != null)
                             ListTile(
                               dense: true,
@@ -184,25 +189,29 @@ class _SearchPopupState extends State<_SearchPopup> {
                               ),
                               onTap: () {
                                 _stopCurrentSearch();
-                                Navigator.of(context).pop(SearchResult.currentLocation());
+                                Navigator.of(
+                                  context,
+                                ).pop(SearchResult.currentLocation());
                               },
                             ),
                           _buildResultsHeader(context),
                         ],
                       ),
-                      toolbarHeight: widget.currentLocationTitle != null ? _kHeaderHeightExt : _kHeaderHeight,
+                      toolbarHeight: widget.currentLocationTitle != null
+                          ? _kHeaderHeightExt
+                          : _kHeaderHeight,
                     ),
                     if (_lastError != null) _buildErrorWidget(),
                     if (_lastError == null)
-                      _suggestions != null ? _buildSuggestionsWidget(context) : _buildRecentSearchWidget(context),
+                      _suggestions != null
+                          ? _buildSuggestionsWidget(context)
+                          : _buildRecentSearchWidget(context),
                   ],
                 ),
                 if (_searchInProgress)
                   Container(
                     color: Colors.white54,
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: Center(child: CircularProgressIndicator()),
                   ),
               ],
             ),
@@ -221,16 +230,12 @@ class _SearchPopupState extends State<_SearchPopup> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                color: foregroundColor,
-              ),
+              border: Border.all(color: foregroundColor),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Container(
-                  width: UIStyle.contentMarginLarge,
-                ),
+                Container(width: UIStyle.contentMarginLarge),
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
@@ -285,38 +290,43 @@ class _SearchPopupState extends State<_SearchPopup> {
     );
   }
 
-  List<TextSpan> _makeHighlightedText(String text, List<IndexRange>? highlights) {
+  List<TextSpan> _makeHighlightedText(
+    String text,
+    List<IndexRange>? highlights,
+  ) {
     List<TextSpan> result = [];
 
     if (highlights == null) {
-      result.add(TextSpan(
-        text: text,
-      ));
+      result.add(TextSpan(text: text));
     } else {
       int lastPosition = 0;
 
       highlights.forEach((element) {
-        result.add(TextSpan(
-          text: text.substring(lastPosition, element.start),
-        ));
-        result.add(TextSpan(
+        result.add(TextSpan(text: text.substring(lastPosition, element.start)));
+        result.add(
+          TextSpan(
             text: text.substring(element.start, element.end),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            )));
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        );
         lastPosition = element.end;
       });
 
-      result.add(TextSpan(
-        text: text.substring(lastPosition),
-      ));
+      result.add(TextSpan(text: text.substring(lastPosition)));
     }
 
     return result;
   }
 
-  Widget _buildSearchTile(BuildContext context, String title, {Map<HighlightType, List<IndexRange>>? highlights}) {
-    List<TextSpan> textSpans = _makeHighlightedText(title, (highlights ?? const {})[HighlightType.title]);
+  Widget _buildSearchTile(
+    BuildContext context,
+    String title, {
+    Map<HighlightType, List<IndexRange>>? highlights,
+  }) {
+    List<TextSpan> textSpans = _makeHighlightedText(
+      title,
+      (highlights ?? const {})[HighlightType.title],
+    );
 
     return ListTile(
       leading: HdsIconWidget.medium(HdsAssetsPaths.search),
@@ -329,9 +339,7 @@ class _SearchPopupState extends State<_SearchPopup> {
           ),
           children: [
             ...textSpans,
-            TextSpan(
-              text: "\"",
-            ),
+            TextSpan(text: "\""),
           ],
         ),
         maxLines: 1,
@@ -349,9 +357,14 @@ class _SearchPopupState extends State<_SearchPopup> {
     required bool isRecentSearchResult,
   }) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-    List<TextSpan> titleTextSpans = _makeHighlightedText(place.title, (highlights ?? const {})[HighlightType.title]);
-    List<TextSpan> addressTextSpans =
-        _makeHighlightedText(place.address.addressText, (highlights ?? const {})[HighlightType.addressLabel]);
+    List<TextSpan> titleTextSpans = _makeHighlightedText(
+      place.title,
+      (highlights ?? const {})[HighlightType.title],
+    );
+    List<TextSpan> addressTextSpans = _makeHighlightedText(
+      place.address.addressText,
+      (highlights ?? const {})[HighlightType.addressLabel],
+    );
 
     return ListTile(
       leading: HdsIconWidget(HdsAssetsPaths.mapMarker),
@@ -386,7 +399,10 @@ class _SearchPopupState extends State<_SearchPopup> {
       ),
       onTap: () {
         FocusScope.of(context).unfocus();
-        RecentSearchDataModel model = Provider.of<RecentSearchDataModel>(context, listen: false);
+        RecentSearchDataModel model = Provider.of<RecentSearchDataModel>(
+          context,
+          listen: false,
+        );
         model.insertPlace(place);
         _showSearchResults(context, null, [place], isRecentSearchResult);
       },
@@ -394,7 +410,10 @@ class _SearchPopupState extends State<_SearchPopup> {
   }
 
   Widget _buildRecentSearchWidget(BuildContext context) {
-    RecentSearchDataModel model = Provider.of<RecentSearchDataModel>(context, listen: false);
+    RecentSearchDataModel model = Provider.of<RecentSearchDataModel>(
+      context,
+      listen: false,
+    );
 
     return FutureBuilder<List<RecentSearchItem>>(
       future: model.getData(),
@@ -403,14 +422,16 @@ class _SearchPopupState extends State<_SearchPopup> {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   if (index.isOdd) {
-                    return Divider(
-                      height: 1,
-                    );
+                    return Divider(height: 1);
                   }
 
                   final RecentSearchItem item = snapshot.data![index ~/ 2];
                   return item.place != null
-                      ? _buildPlaceTile(context, item.place!, isRecentSearchResult: true)
+                      ? _buildPlaceTile(
+                          context,
+                          item.place!,
+                          isRecentSearchResult: true,
+                        )
                       : _buildSearchTile(context, item.title!);
                 },
                 semanticIndexCallback: (Widget widget, int localIndex) {
@@ -431,15 +452,14 @@ class _SearchPopupState extends State<_SearchPopup> {
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           if (index.isOdd) {
-            return Divider(
-              height: 1,
-            );
+            return Divider(height: 1);
           }
 
           Widget suggestionsWidget;
           Suggestion suggestion = _suggestions![index ~/ 2];
           Place? place = suggestion.place;
-          Map<HighlightType, List<IndexRange>> highlights = suggestion.getHighlights();
+          Map<HighlightType, List<IndexRange>> highlights = suggestion
+              .getHighlights();
 
           if (place == null) {
             suggestionsWidget = _buildSearchTile(
@@ -514,8 +534,14 @@ class _SearchPopupState extends State<_SearchPopup> {
       });
     } else {
       // start searching
-      final TextQuery query = TextQuery.withArea(text, TextQueryArea.withCenter(_lastPosition));
-      _searchTaskHandle = _searchEngine.suggest(query, _searchOptions, (error, suggestions) {
+      final TextQuery query = TextQuery.withArea(
+        text,
+        TextQueryArea.withCenter(_lastPosition),
+      );
+      _searchTaskHandle = _searchEngine.suggest(query, _searchOptions, (
+        error,
+        suggestions,
+      ) {
         if (error != null) {
           print('Search failed. Error: ${error.toString()}');
           _showErrorMessage(error);
@@ -540,11 +566,20 @@ class _SearchPopupState extends State<_SearchPopup> {
       _searchInProgress = true;
     });
 
-    RecentSearchDataModel model = Provider.of<RecentSearchDataModel>(context, listen: false);
+    RecentSearchDataModel model = Provider.of<RecentSearchDataModel>(
+      context,
+      listen: false,
+    );
     model.insertText(text);
 
-    final TextQuery query = TextQuery.withArea(text, TextQueryArea.withCenter(_lastPosition));
-    _searchTaskHandle = _searchEngine.searchByText(query, _searchOptions, (error, places) async {
+    final TextQuery query = TextQuery.withArea(
+      text,
+      TextQueryArea.withCenter(_lastPosition),
+    );
+    _searchTaskHandle = _searchEngine.searchByText(query, _searchOptions, (
+      error,
+      places,
+    ) async {
       if (error != null) {
         print('Search failed. Error: ${error.toString()}');
         _showErrorMessage(error);
@@ -559,19 +594,26 @@ class _SearchPopupState extends State<_SearchPopup> {
   }
 
   Future _showSearchResults(
-      BuildContext context, String? queryString, List<Place> places, bool isRecentSearchResult) async {
+    BuildContext context,
+    String? queryString,
+    List<Place> places,
+    bool isRecentSearchResult,
+  ) async {
     final result = await Navigator.of(context).pushNamed(
       SearchResultsScreen.navRoute,
-      arguments: [queryString ?? "", places, _lastPosition, isRecentSearchResult],
+      arguments: [
+        queryString ?? "",
+        places,
+        _lastPosition,
+        isRecentSearchResult,
+      ],
     );
 
     if (result != null) {
       if (result is GeoCoordinates) {
         _lastPosition = result;
       } else if (result is Place) {
-        Navigator.of(context).pop(SearchResult(
-          place: result,
-        ));
+        Navigator.of(context).pop(SearchResult(place: result));
       } else {
         assert(false);
       }
@@ -579,7 +621,9 @@ class _SearchPopupState extends State<_SearchPopup> {
   }
 
   void _showErrorMessage(SearchError searchError) {
-    final String? message = searchError.errorMessage(AppLocalizations.of(context)!);
+    final String? message = searchError.errorMessage(
+      AppLocalizations.of(context)!,
+    );
     if (mounted && message != null) {
       ErrorToaster.makeToast(context, message);
     }

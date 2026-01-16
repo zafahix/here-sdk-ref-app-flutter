@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,15 +56,21 @@ Future<void> main() async {
   SdkContext.init();
 
   // Obtain an instance of SharedPreferences for persistent storage.
-  final SharedPreferences _sharedPreferences = await SharedPreferences.getInstance();
+  final SharedPreferences _sharedPreferences =
+      await SharedPreferences.getInstance();
 
   // Load catalog configurations data from preferences and convert to CatalogConfiguration format.
   final List<CatalogConfiguration>? catalogConfigurations =
-      AppPreferences.loadSdkOptionsCatalogConfigurationFromPrefs(_sharedPreferences)?.toSdkCatalogConfigurations();
+      AppPreferences.loadSdkOptionsCatalogConfigurationFromPrefs(
+        _sharedPreferences,
+      )?.toSdkCatalogConfigurations();
 
   // Create SDKOptions with authentication using access key and secret.
   final SDKOptions sdkOptions = SDKOptions.withAuthenticationMode(
-    AuthenticationMode.withKeySecret(Environment.accessKeyId, Environment.accessKeySecret),
+    AuthenticationMode.withKeySecret(
+      Environment.accessKeyId,
+      Environment.accessKeySecret,
+    ),
   );
 
   // If catalog configurations are available, assign them to sdkOptions.
@@ -97,7 +103,9 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => RecentSearchDataModel()),
-        ChangeNotifierProvider(create: (context) => RoutePreferencesModel.withDefaults()),
+        ChangeNotifierProvider(
+          create: (context) => RoutePreferencesModel.withDefaults(),
+        ),
         ChangeNotifierProvider(create: (context) => MapLoaderController()),
         ChangeNotifierProvider(create: (context) => AppPreferences()),
         Provider(create: (context) => PositioningEngine()),
@@ -110,14 +118,14 @@ class _MyAppState extends State<MyApp> {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: [
-          const Locale('en', ''),
-        ],
+        supportedLocales: [const Locale('en', '')],
         theme: UIStyle.lightTheme,
-        onGenerateTitle: (BuildContext context) => AppLocalizations.of(context)!.appTitle,
+        onGenerateTitle: (BuildContext context) =>
+            AppLocalizations.of(context)!.appTitle,
         onGenerateRoute: (RouteSettings settings) {
           Map<String, WidgetBuilder> routes = {
-            LandingScreen.navRoute: (BuildContext context) => LandingScreen(key: LandingScreen.landingScreenKey),
+            LandingScreen.navRoute: (BuildContext context) =>
+                LandingScreen(key: LandingScreen.landingScreenKey),
             SearchResultsScreen.navRoute: (BuildContext context) {
               List<dynamic> arguments = settings.arguments as List<dynamic>;
               assert(arguments.length == 4);
@@ -156,7 +164,8 @@ class _MyAppState extends State<MyApp> {
             DownloadMapsScreen.navRoute: (BuildContext context) {
               return DownloadMapsScreen();
             },
-            HerePrivacyNoticeScreen.navRoute: (BuildContext context) => HerePrivacyNoticeScreen(),
+            HerePrivacyNoticeScreen.navRoute: (BuildContext context) =>
+                HerePrivacyNoticeScreen(),
             MapRegionsListScreen.navRoute: (BuildContext context) {
               List<dynamic> arguments = settings.arguments as List<dynamic>;
               assert(arguments.length == 1);
@@ -164,7 +173,8 @@ class _MyAppState extends State<MyApp> {
                 regions: arguments[0] as List<Region>,
               );
             },
-            CustomCatalogConfigurationScreen.navRoute: (BuildContext context) => CustomCatalogConfigurationScreen(),
+            CustomCatalogConfigurationScreen.navRoute: (BuildContext context) =>
+                CustomCatalogConfigurationScreen(),
           };
 
           WidgetBuilder builder = routes[settings.name]!;
@@ -202,9 +212,7 @@ class InitErrorScreen extends StatelessWidget {
         },
       ),
       theme: UIStyle.lightTheme,
-      localizationsDelegates: [
-        AppLocalizations.delegate,
-      ],
+      localizationsDelegates: [AppLocalizations.delegate],
     );
   }
 }

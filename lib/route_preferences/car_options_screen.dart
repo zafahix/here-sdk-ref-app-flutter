@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,15 @@ import 'route_text_options_widget.dart';
 class CarOptionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [RouteOptionsWidget(), RouteTextOptionsWidget(), RouteAvoidanceOptionsWidget()],
-          ),
-        ),
-      );
+    child: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RouteOptionsWidget(),
+          RouteTextOptionsWidget(),
+          RouteAvoidanceOptionsWidget(),
+        ],
+      ),
+    ),
+  );
 }

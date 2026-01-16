@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import 'package:here_sdk/location.dart';
 
 import '../location_provider_interface.dart';
 
-class PositioningLocationProvider extends LocationProviderInterface implements LocationListener {
+class PositioningLocationProvider extends LocationProviderInterface
+    implements LocationListener {
   PositioningLocationProvider() : _locationEngine = LocationEngine();
 
   final LocationEngine _locationEngine;
@@ -38,7 +39,6 @@ class PositioningLocationProvider extends LocationProviderInterface implements L
     _locationEngine.setPauseLocationUpdatesAutomatically(true);
     _locationEngine
       ..addLocationListener(this)
-
       /// Important: The HERE Privacy Notice must be shown and accepted by the user
       /// before starting the LocationEngine. Ensure the FTU/privacy screen is displayed
       /// at app start-up. This method must be called every time before starting the engine.

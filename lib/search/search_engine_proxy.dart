@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,16 @@ class SearchEngineProxy {
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate the execution of the task.
   TaskHandle searchByPlaceIdWithLanguageCode(
-      PlaceIdQuery query, LanguageCode? languageCode, PlaceIdSearchCallback callback) {
+    PlaceIdQuery query,
+    LanguageCode? languageCode,
+    PlaceIdSearchCallback callback,
+  ) {
     if (offline) {
-      return _offlineSearchEngine.searchByPlaceId(query, languageCode, callback);
+      return _offlineSearchEngine.searchByPlaceId(
+        query,
+        languageCode,
+        callback,
+      );
     } else {
       return _onlineSearchEngine.searchByPlaceId(query, languageCode, callback);
     }
@@ -69,7 +76,11 @@ class SearchEngineProxy {
   /// [callback] Callback which receives the result on the main thread.
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate the execution of the task.
-  TaskHandle searchByText(TextQuery query, SearchOptions options, SearchCallback callback) {
+  TaskHandle searchByText(
+    TextQuery query,
+    SearchOptions options,
+    SearchCallback callback,
+  ) {
     if (offline) {
       return _offlineSearchEngine.searchByText(query, options, callback);
     } else {
@@ -87,7 +98,11 @@ class SearchEngineProxy {
   /// [callback] Callback which receives the result on the main thread.
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate the execution of the task.
-  TaskHandle suggest(TextQuery query, SearchOptions options, SuggestCallback callback) {
+  TaskHandle suggest(
+    TextQuery query,
+    SearchOptions options,
+    SuggestCallback callback,
+  ) {
     if (offline) {
       return _offlineSearchEngine.suggestByText(query, options, callback);
     } else {
@@ -111,11 +126,23 @@ class SearchEngineProxy {
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate execution of the task.
   ///
-  TaskHandle searchByCoordinates(GeoCoordinates coordinates, SearchOptions options, SearchCallback callback) {
+  TaskHandle searchByCoordinates(
+    GeoCoordinates coordinates,
+    SearchOptions options,
+    SearchCallback callback,
+  ) {
     if (offline) {
-      return _offlineSearchEngine.searchByCoordinates(coordinates, options, callback);
+      return _offlineSearchEngine.searchByCoordinates(
+        coordinates,
+        options,
+        callback,
+      );
     } else {
-      return _onlineSearchEngine.searchByCoordinates(coordinates, options, callback);
+      return _onlineSearchEngine.searchByCoordinates(
+        coordinates,
+        options,
+        callback,
+      );
     }
   }
 
@@ -132,7 +159,11 @@ class SearchEngineProxy {
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate the execution of the task.
   ///
-  TaskHandle searchByCategory(CategoryQuery query, SearchOptions options, SearchCallback callback) {
+  TaskHandle searchByCategory(
+    CategoryQuery query,
+    SearchOptions options,
+    SearchCallback callback,
+  ) {
     if (offline) {
       return _offlineSearchEngine.searchByCategory(query, options, callback);
     } else {

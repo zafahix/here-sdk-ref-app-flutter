@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,9 @@ import 'route_text_options_widget.dart';
 class ScooterOptionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ScooterOptions scooterOptions = context.select((RoutePreferencesModel model) => model.scooterOptions);
+    final ScooterOptions scooterOptions = context.select(
+      (RoutePreferencesModel model) => model.scooterOptions,
+    );
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -43,11 +45,15 @@ class ScooterOptionsScreen extends StatelessWidget {
             RouteOptionsWidget(),
             RouteTextOptionsWidget(),
             RouteAvoidanceOptionsWidget(),
-            PreferencesSectionTitle(title: AppLocalizations.of(context)!.highwayTitle),
+            PreferencesSectionTitle(
+              title: AppLocalizations.of(context)!.highwayTitle,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                PreferencesRowTitle(title: AppLocalizations.of(context)!.allowHighwayTitle),
+                PreferencesRowTitle(
+                  title: AppLocalizations.of(context)!.allowHighwayTitle,
+                ),
                 Switch.adaptive(
                   value: scooterOptions.allowHighway,
                   onChanged: (value) {
@@ -56,11 +62,12 @@ class ScooterOptionsScreen extends StatelessWidget {
                       ..textOptions = scooterOptions.textOptions
                       ..avoidanceOptions = scooterOptions.avoidanceOptions
                       ..allowHighway = value;
-                    context.read<RoutePreferencesModel>().scooterOptions = newOptions;
+                    context.read<RoutePreferencesModel>().scooterOptions =
+                        newOptions;
                   },
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

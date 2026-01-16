@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 HERE Europe B.V.
+ * Copyright (C) 2020-2026 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,11 @@ import 'package:flutter/material.dart';
 import '../download_maps/map_loader_controller.dart';
 
 class ConnectionStateMonitor extends StatefulWidget {
-  const ConnectionStateMonitor({super.key, required this.child, required this.mapLoaderController});
+  const ConnectionStateMonitor({
+    super.key,
+    required this.child,
+    required this.mapLoaderController,
+  });
 
   final Widget child;
   final MapLoaderController mapLoaderController;
@@ -44,8 +48,10 @@ class _ConnectionStateMonitorState extends State<ConnectionStateMonitor> {
     super.initState();
     _subscription = Connectivity().onConnectivityChanged.listen((_) async {
       // Check latest connectivity status on connection change.
-      final List<ConnectivityResult> status = await Connectivity().checkConnectivity();
-      final bool hasSameConnectionStatus = _status.length == status.length && _status.every(status.contains);
+      final List<ConnectivityResult> status = await Connectivity()
+          .checkConnectivity();
+      final bool hasSameConnectionStatus =
+          _status.length == status.length && _status.every(status.contains);
       if (!hasSameConnectionStatus) {
         _status = status;
         if (isConnected) {
