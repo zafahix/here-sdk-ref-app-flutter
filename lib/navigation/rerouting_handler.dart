@@ -32,10 +32,7 @@ typedef ReroutingCallback = void Function(Routing.Route? newRoute);
 /// Helper class that monitors the deviation from the current route and performs route recalculation if necessary.
 /// [Routing.RoutingEngine] is used to calculate a new route. Calculation of a new route starts when the deviation from
 /// the current route exceeds [_kMaxRouteDeviation] meters for [_kMaxRouteDeviationTime] seconds.
-class ReroutingHandler
-    implements
-        Navigation.RouteDeviationListener,
-        Navigation.MilestoneStatusListener {
+class ReroutingHandler implements Navigation.RouteDeviationListener, Navigation.MilestoneStatusListener {
   /// The maximum deviation distance in meters.
   static const int _kMaxRouteDeviation = 20;
 
@@ -64,6 +61,8 @@ class ReroutingHandler
   bool _reroutingInProgress = false;
   Timer? _reroutingTimer;
   int _passedWayPointIndex = 0;
+  bool _reroutingErrorShown = false;
+  final void Function(Routing.RoutingError error)? onReroutingError;
 
   /// Constructs a [ReroutingHandler] object.
   ReroutingHandler({
@@ -73,10 +72,9 @@ class ReroutingHandler
     required this.onBeginRerouting,
     required this.onNewRoute,
     required this.offline,
+    this.onReroutingError,
   }) : _wayPoints = wayPoints,
-       _routingEngine = offline
-           ? Routing.OfflineRoutingEngine()
-           : Routing.RoutingEngine();
+       _routingEngine = offline ? Routing.OfflineRoutingEngine() : Routing.RoutingEngine();
 
   /// Called by [Navigator] whenever route deviation has been observed.
   @override
@@ -87,8 +85,7 @@ class ReroutingHandler
     }
 
     // Get current geographic coordinates.
-    Navigation.MapMatchedLocation? currentMapMatchedLocation =
-        routeDeviation.currentLocation.mapMatchedLocation;
+    Navigation.MapMatchedLocation? currentMapMatchedLocation = routeDeviation.currentLocation.mapMatchedLocation;
     GeoCoordinates currentGeoCoordinates = currentMapMatchedLocation == null
         ? routeDeviation.currentLocation.originalLocation.coordinates
         : currentMapMatchedLocation.coordinates;
@@ -103,16 +100,11 @@ class ReroutingHandler
           ? routeDeviation.lastLocationOnRoute!.originalLocation.coordinates
           : lastMapMatchedLocationOnRoute.coordinates;
     } else {
-      print(
-        'User was never following the route. So, we take the start of the route instead.',
-      );
-      lastGeoCoordinatesOnRoute =
-          route.sections.first.departurePlace.originalCoordinates!;
+      print('User was never following the route. So, we take the start of the route instead.');
+      lastGeoCoordinatesOnRoute = route.sections.first.departurePlace.originalCoordinates!;
     }
 
-    int distanceInMeters = currentGeoCoordinates
-        .distanceTo(lastGeoCoordinatesOnRoute)
-        .truncate();
+    int distanceInMeters = currentGeoCoordinates.distanceTo(lastGeoCoordinatesOnRoute).truncate();
     if (distanceInMeters > _kMaxRouteDeviation) {
       _reroutingTimer ??= Timer(
         Duration(seconds: _kMaxRouteDeviationTime),
@@ -129,19 +121,14 @@ class ReroutingHandler
     _reroutingTimer?.cancel();
   }
 
-  void _beginRerouting(
-    GeoCoordinates currentPosition,
-    Routing.Route oldRoute,
-    double? heading,
-  ) {
+  void _beginRerouting(GeoCoordinates currentPosition, Routing.Route oldRoute, double? heading) {
     print("Begin rerouting...");
     _reroutingInProgress = true;
     _reroutingTimer = null;
     onBeginRerouting();
 
     List<Routing.Waypoint> newWayPoints = [
-      Routing.Waypoint.withDefaults(currentPosition)
-        ..headingInDegrees = heading,
+      Routing.Waypoint.withDefaults(currentPosition)..headingInDegrees = heading,
       ..._wayPoints.sublist(_passedWayPointIndex + 1),
     ];
 
@@ -183,13 +170,15 @@ class ReroutingHandler
     }
   }
 
-  void _onReroutingEnd(
-    Routing.RoutingError? error,
-    List<Routing.Route>? routes,
-    List<Routing.Waypoint> newWayPoints,
-  ) {
+  void _onReroutingEnd(Routing.RoutingError? error, List<Routing.Route>? routes, List<Routing.Waypoint> newWayPoints) {
     if (routes == null || routes.isEmpty) {
       if (error != null) {
+        // Show error dialog only once per navigation session, and only for serverUnreachable errors
+        // to specifically inform users about network connectivity issues.
+        if (!_reroutingErrorShown && error == Routing.RoutingError.serverUnreachable) {
+          onReroutingError?.call(error);
+          _reroutingErrorShown = true;
+        }
         print('Routing failed. Error: ${error.toString()}');
       }
       onNewRoute(null);
@@ -206,10 +195,7 @@ class ReroutingHandler
 
   /// Called by [Navigator] when a milestone has been reached.
   @override
-  void onMilestoneStatusUpdated(
-    Navigation.Milestone milestone,
-    Navigation.MilestoneStatus status,
-  ) {
+  void onMilestoneStatusUpdated(Navigation.Milestone milestone, Navigation.MilestoneStatus status) {
     if (milestone.waypointIndex != null) {
       _passedWayPointIndex = milestone.waypointIndex!;
     }

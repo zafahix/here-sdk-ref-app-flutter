@@ -1189,6 +1189,10 @@
   },
   "enterHighwayFromLeftActionText": "Join the highway from the left side",
   "enterHighwayFromRightActionText": "Join the highway from the right side",
+  "error": "Error",
+  "@error": {
+    "description": "Text for the error"
+  },
   "errorAuthenticationFailed": "Authentication failed. Please check your credentials",
   "@errorAuthenticationFailed": {
     "description": "Text for the authentication failure"
@@ -1561,6 +1565,10 @@
   "@offlineAppMapsDialogTitle": {
     "description": "Title of the dialog box requesting the download of maps."
   },
+  "okTitle": "Okay",
+  "@okTitle": {
+    "description": "Title of the OK button"
+  },
   "optimizationModeTitle": "Optimization mode",
   "@optimizationModeTitle": {
     "description": "Title of optimization mode setting in route options"
@@ -1764,6 +1772,10 @@
   "selectPositioningDialogTitle": "Choose a positioning method",
   "@selectPositioningDialogTitle": {
     "description": "Title of the navigation positioning source dialog"
+  },
+  "serverNotReachableError": "It seems the server is not reachable, please check your internet connection.",
+  "@serverNotReachableError": {
+    "description": "Message for server not reachable error"
   },
   "sharpLeftTurnActionNextRoadText": "Make a hard left turn onto '{{0}}'",
   "@sharpLeftTurnActionNextRoadText": {

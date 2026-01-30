@@ -70,8 +70,7 @@ class NavigationScreen extends StatefulWidget {
   final List<Routing.Waypoint> wayPoints;
 
   /// Constructs a widget.
-  NavigationScreen({Key? key, required this.route, required this.wayPoints})
-    : super(key: key);
+  NavigationScreen({Key? key, required this.route, required this.wayPoints}) : super(key: key);
 
   @override
   _NavigationScreenState createState() => _NavigationScreenState();
@@ -122,8 +121,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   String? _currentStreetName;
   double? _currentSpeedLimit;
   double? _currentSpeed;
-  Navigation.SpeedWarningStatus _speedWarningStatus =
-      Navigation.SpeedWarningStatus.speedLimitRestored;
+  Navigation.SpeedWarningStatus _speedWarningStatus = Navigation.SpeedWarningStatus.speedLimitRestored;
 
   late ReroutingHandler _reroutingHandler;
   bool _reroutingInProgress = false;
@@ -131,8 +129,7 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   AppLifecycleState? _appLifecycleState;
 
-  bool get _canShowNotification =>
-      _appLifecycleState == AppLifecycleState.paused;
+  bool get _canShowNotification => _appLifecycleState == AppLifecycleState.paused;
 
   @override
   void initState() {
@@ -159,10 +156,8 @@ class _NavigationScreenState extends State<NavigationScreen>
         _showNotification();
       },
       onNewRoute: _onNewRoute,
-      offline: Provider.of<AppPreferences>(
-        context,
-        listen: false,
-      ).useAppOffline,
+      offline: Provider.of<AppPreferences>(context, listen: false).useAppOffline,
+      onReroutingError: _showReroutingNetworkError,
     );
     _notificationsManager.init();
   }
@@ -180,31 +175,43 @@ class _NavigationScreenState extends State<NavigationScreen>
     super.dispose();
   }
 
+  // Shows a dialog for rerouting network errors and handles user action
+  void _showReroutingNetworkError(Routing.RoutingError error) async {
+    // Return early if the widget is not mounted
+    if (!mounted) {
+      return;
+    }
+    AppLocalizations localizations = AppLocalizations.of(context)!;
+    // Show confirmation dialog to user when server is unreachable during rerouting
+    bool result = await Util.showCommonConfirmationDialog(
+      context: context,
+      title: localizations.error,
+      message: localizations.serverNotReachableError,
+      actionTitle: localizations.okTitle,
+      cancelTitle: localizations.stopNavigationAcceptButtonCaption,
+    );
+    // If user cancels (result is false), stop navigation and return to previous screen
+    if (mounted && !result) {
+      _stopNavigation();
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget? nextManeuverWidget = _reroutingInProgress || !_canLocateUserPosition
-        ? null
-        : _buildNextManeuver(context);
+    Widget? nextManeuverWidget = _reroutingInProgress || !_canLocateUserPosition ? null : _buildNextManeuver(context);
     PreferredSize? topBarWidget = _buildTopBar(context);
-    double topOffset =
-        MediaQuery.of(context).padding.top - UIStyle.popupsBorderRadius;
-    final HereMapOptions options = HereMapOptions()
-      ..initialBackgroundColor = Theme.of(context).colorScheme.surface;
+    double topOffset = MediaQuery.of(context).padding.top - UIStyle.popupsBorderRadius;
+    final HereMapOptions options = HereMapOptions()..initialBackgroundColor = Theme.of(context).colorScheme.surface;
     return PopScope(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: topBarWidget,
         body: Padding(
-          padding: EdgeInsets.only(
-            top: topBarWidget != null ? _kTopBarHeight + topOffset : 0,
-          ),
+          padding: EdgeInsets.only(top: topBarWidget != null ? _kTopBarHeight + topOffset : 0),
           child: Stack(
             children: [
-              HereMap(
-                key: _mapKey,
-                options: options,
-                onMapCreated: _onMapCreated,
-              ),
+              HereMap(key: _mapKey, options: options, onMapCreated: _onMapCreated),
               if (nextManeuverWidget != null) nextManeuverWidget,
               if (_navigationStarted) _buildNavigationControls(context),
             ],
@@ -234,90 +241,72 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   Future<void> _configTextSpeakerForIOS() async {
     await _flutterTts.setSharedInstance(true);
-    await _flutterTts.setIosAudioCategory(
-      IosTextToSpeechAudioCategory.playback,
-      <IosTextToSpeechAudioCategoryOptions>[
-        IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-        IosTextToSpeechAudioCategoryOptions.duckOthers,
-      ],
-      IosTextToSpeechAudioMode.voicePrompt,
-    );
+    await _flutterTts.setIosAudioCategory(IosTextToSpeechAudioCategory.playback, <IosTextToSpeechAudioCategoryOptions>[
+      IosTextToSpeechAudioCategoryOptions.mixWithOthers,
+      IosTextToSpeechAudioCategoryOptions.duckOthers,
+    ], IosTextToSpeechAudioMode.voicePrompt);
   }
 
   void _onMapCreated(HereMapController hereMapController) {
     _hereMapController = hereMapController;
 
-    CustomMapStyleSettings customMapStyleSettings =
-        Provider.of<CustomMapStyleSettings>(context, listen: false);
+    CustomMapStyleSettings customMapStyleSettings = Provider.of<CustomMapStyleSettings>(context, listen: false);
 
-    MapSceneLoadSceneCallback mapSceneLoadSceneCallback =
-        (MapError? error) async {
-          if (error != null) {
-            print('Map scene not loaded. MapError: ${error.toString()}');
-            return;
-          }
+    MapSceneLoadSceneCallback mapSceneLoadSceneCallback = (MapError? error) async {
+      if (error != null) {
+        print('Map scene not loaded. MapError: ${error.toString()}');
+        return;
+      }
 
-          hereMapController.camera.lookAtPointWithMeasure(
-            _currentRoute.geometry.vertices.first,
-            MapMeasure(MapMeasureKind.distanceInMeters, _kInitDistanceToEarth),
-          );
+      hereMapController.camera.lookAtPointWithMeasure(
+        _currentRoute.geometry.vertices.first,
+        MapMeasure(MapMeasureKind.distanceInMeters, _kInitDistanceToEarth),
+      );
 
-          hereMapController.setWatermarkLocation(
-            Anchor2D.withHorizontalAndVertical(0, 1),
-            Point2D(
-              -hereMapController.watermarkSize.width / 2,
-              -hereMapController.watermarkSize.height / 2,
-            ),
-          );
+      hereMapController.setWatermarkLocation(
+        Anchor2D.withHorizontalAndVertical(0, 1),
+        Point2D(-hereMapController.watermarkSize.width / 2, -hereMapController.watermarkSize.height / 2),
+      );
 
-          Util.setTrafficLayersVisibilityOnMap(context, hereMapController);
+      Util.setTrafficLayersVisibilityOnMap(context, hereMapController);
 
-          _addRouteToMap();
-          bool? result = await Dialogs.askForPositionSource(context);
-          if (result == null) {
-            // Nothing answered. Go back.
-            Navigator.of(context).pop();
-            return;
-          }
+      _addRouteToMap();
+      bool? result = await Dialogs.askForPositionSource(context);
+      if (result == null) {
+        // Nothing answered. Go back.
+        Navigator.of(context).pop();
+        return;
+      }
 
-          if (result) {
-            _shouldMonitorPositioning = false;
-            _startPositioning(
-              context,
-              simulated: true,
-              options: Navigation.LocationSimulatorOptions()
-                ..speedFactor = _kSpeedFactor
-                ..notificationInterval = Duration(
-                  milliseconds: _kNotificationIntervalInMilliseconds,
-                ),
-            );
-          } else {
-            _shouldMonitorPositioning = true;
-            _initialiseUserPositioning();
-            _startPositioning(context);
-          }
+      if (result) {
+        _shouldMonitorPositioning = false;
+        _startPositioning(
+          context,
+          simulated: true,
+          options: Navigation.LocationSimulatorOptions()
+            ..speedFactor = _kSpeedFactor
+            ..notificationInterval = Duration(milliseconds: _kNotificationIntervalInMilliseconds),
+        );
+      } else {
+        _shouldMonitorPositioning = true;
+        _initialiseUserPositioning();
+        _startPositioning(context);
+      }
 
-          // on realtime locations, and platform is Android,
-          // check if battery saver is on, which might effect the
-          // navigation
-          _checkDeviceBatteryStatus(context, isRealTimeNavigation: !result);
-          _startNavigation();
-          _addGestureListeners();
-        };
+      // on realtime locations, and platform is Android,
+      // check if battery saver is on, which might effect the
+      // navigation
+      _checkDeviceBatteryStatus(context, isRealTimeNavigation: !result);
+      _startNavigation();
+      _addGestureListeners();
+    };
 
-    Util.loadMapScene(
-      customMapStyleSettings,
-      hereMapController,
-      mapSceneLoadSceneCallback,
-    );
+    Util.loadMapScene(customMapStyleSettings, hereMapController, mapSceneLoadSceneCallback);
   }
 
   /// Checks and shows the battery saver warning dialog, if realtime navigation is on
   /// Only for Platform Android
-  Future<void> _checkDeviceBatteryStatus(
-    BuildContext context, {
-    required bool isRealTimeNavigation,
-  }) async {
+  Future<void> _checkDeviceBatteryStatus(BuildContext context, {required bool isRealTimeNavigation}) async {
     if (Platform.isAndroid && context.mounted && isRealTimeNavigation) {
       final bool result = await isBatterySaverOn();
       if (result) {
@@ -327,35 +316,27 @@ class _NavigationScreenState extends State<NavigationScreen>
   }
 
   void _addGestureListeners() {
-    _hereMapController.gestures.doubleTapListener = DoubleTapListener(
-      (origin) => _enableTracking(false),
-    );
+    _hereMapController.gestures.doubleTapListener = DoubleTapListener((origin) => _enableTracking(false));
     _hereMapController.gestures.panListener = PanListener(
       (state, origin, translation, velocity) => _enableTracking(false),
     );
     _hereMapController.gestures.pinchRotateListener = PinchRotateListener(
-      (state, pinchOrigin, rotationOrigin, twoFingerDistance, rotation) =>
-          _enableTracking(false),
+      (state, pinchOrigin, rotationOrigin, twoFingerDistance, rotation) => _enableTracking(false),
     );
     _hereMapController.gestures.twoFingerPanListener = TwoFingerPanListener(
       (state, origin, translation, velocity) => _enableTracking(false),
     );
-    _hereMapController.gestures.twoFingerTapListener = TwoFingerTapListener(
-      (origin) => _enableTracking(false),
-    );
+    _hereMapController.gestures.twoFingerTapListener = TwoFingerTapListener((origin) => _enableTracking(false));
   }
 
   void _enableTracking(bool enable) {
     setState(() {
-      _visualNavigator.cameraBehavior = enable
-          ? Navigation.FixedCameraBehavior()
-          : null;
+      _visualNavigator.cameraBehavior = enable ? Navigation.FixedCameraBehavior() : null;
     });
   }
 
   void _addRouteToMap() {
-    int markerSize =
-        (_hereMapController.pixelScale * UIStyle.locationMarkerSize).round();
+    int markerSize = (_hereMapController.pixelScale * UIStyle.locationMarkerSize).round();
     _startMarker = Util.createMarkerWithImagePath(
       _currentRoute.geometry.vertices.first,
       HdsAssetsPaths.currentLocation,
@@ -365,8 +346,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     );
     _hereMapController.mapScene.addMapMarker(_startMarker);
 
-    markerSize = (_hereMapController.pixelScale * UIStyle.searchMarkerSize * 2)
-        .round();
+    markerSize = (_hereMapController.pixelScale * UIStyle.searchMarkerSize * 2).round();
     _finishMarker = Util.createMarkerWithImagePath(
       _currentRoute.geometry.vertices.last,
       "assets/map_marker_big.svg",
@@ -383,10 +363,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   void _zoomToWholeRoute() {
     final BuildContext? context = _mapKey.currentContext;
     if (context != null) {
-      _hereMapController.zoomToLogicalViewPort(
-        geoBox: widget.route.boundingBox,
-        context: context,
-      );
+      _hereMapController.zoomToLogicalViewPort(geoBox: widget.route.boundingBox, context: context);
     }
   }
 
@@ -406,23 +383,18 @@ class _NavigationScreenState extends State<NavigationScreen>
   }
 
   void _setupListeners() {
-    _visualNavigator.routeProgressListener = Navigation.RouteProgressListener((
-      routeProgress,
-    ) {
-      List<Navigation.SectionProgress> sectionProgressList =
-          routeProgress.sectionProgress;
+    _visualNavigator.routeProgressListener = Navigation.RouteProgressListener((routeProgress) {
+      List<Navigation.SectionProgress> sectionProgressList = routeProgress.sectionProgress;
 
       int? currentManeuverIndex;
       int currentManeuverDistance = 0;
       int? nextManeuverIndex;
       int nextManeuverDistance = 0;
 
-      List<Navigation.ManeuverProgress> nextManeuverList =
-          routeProgress.maneuverProgress;
+      List<Navigation.ManeuverProgress> nextManeuverList = routeProgress.maneuverProgress;
       if (nextManeuverList.isNotEmpty) {
         currentManeuverIndex = nextManeuverList.first.maneuverIndex;
-        currentManeuverDistance =
-            nextManeuverList.first.remainingDistanceInMeters;
+        currentManeuverDistance = nextManeuverList.first.remainingDistanceInMeters;
 
         if (nextManeuverList.length > 1) {
           nextManeuverIndex = nextManeuverList[1].maneuverIndex;
@@ -431,10 +403,8 @@ class _NavigationScreenState extends State<NavigationScreen>
       }
 
       setState(() {
-        _remainingDistanceInMeters =
-            sectionProgressList.last.remainingDistanceInMeters;
-        _remainingDurationInSeconds =
-            sectionProgressList.last.remainingDuration.inSeconds;
+        _remainingDistanceInMeters = sectionProgressList.last.remainingDistanceInMeters;
+        _remainingDurationInSeconds = sectionProgressList.last.remainingDuration.inSeconds;
 
         _currentManeuverIndex = currentManeuverIndex;
         _currentManeuverDistance = currentManeuverDistance;
@@ -443,35 +413,24 @@ class _NavigationScreenState extends State<NavigationScreen>
       });
     });
 
-    _visualNavigator.navigableLocationListener =
-        Navigation.NavigableLocationListener((location) {
-          if (_currentSpeed !=
-              location.originalLocation.speedInMetersPerSecond) {
-            setState(() {
-              _currentSpeed = location.originalLocation.speedInMetersPerSecond;
-            });
-          }
+    _visualNavigator.navigableLocationListener = Navigation.NavigableLocationListener((location) {
+      if (_currentSpeed != location.originalLocation.speedInMetersPerSecond) {
+        setState(() {
+          _currentSpeed = location.originalLocation.speedInMetersPerSecond;
         });
+      }
+    });
 
-    _visualNavigator.roadTextsListener = Navigation.RoadTextsListener((
-      roadTexts,
-    ) {
+    _visualNavigator.roadTextsListener = Navigation.RoadTextsListener((roadTexts) {
       if (_currentStreetName != roadTexts.names.getDefaultValue()) {
         setState(() => _currentStreetName = roadTexts.names.getDefaultValue());
       }
     });
 
-    if (_currentRoute.requestedTransportMode !=
-        Transport.TransportMode.pedestrian) {
-      _visualNavigator.speedLimitListener = Navigation.SpeedLimitListener((
-        speedLimit,
-      ) {
-        if (_currentSpeedLimit !=
-            speedLimit.effectiveSpeedLimitInMetersPerSecond()) {
-          setState(
-            () => _currentSpeedLimit = speedLimit
-                .effectiveSpeedLimitInMetersPerSecond(),
-          );
+    if (_currentRoute.requestedTransportMode != Transport.TransportMode.pedestrian) {
+      _visualNavigator.speedLimitListener = Navigation.SpeedLimitListener((speedLimit) {
+        if (_currentSpeedLimit != speedLimit.effectiveSpeedLimitInMetersPerSecond()) {
+          setState(() => _currentSpeedLimit = speedLimit.effectiveSpeedLimitInMetersPerSecond());
         }
       });
 
@@ -479,14 +438,9 @@ class _NavigationScreenState extends State<NavigationScreen>
         ..lowSpeedOffsetInMetersPerSecond = _kDefaultSpeedLimitOffset
         ..highSpeedOffsetInMetersPerSecond = _kDefaultSpeedLimitOffset
         ..highSpeedBoundaryInMetersPerSecond = _kDefaultSpeedLimitBoundary;
-      _visualNavigator.speedWarningOptions = Navigation.SpeedWarningOptions(
-        offset,
-      );
-      _visualNavigator.speedWarningListener = Navigation.SpeedWarningListener((
-        status,
-      ) {
-        if (status == Navigation.SpeedWarningStatus.speedLimitExceeded &&
-            _soundEnabled) {
+      _visualNavigator.speedWarningOptions = Navigation.SpeedWarningOptions(offset);
+      _visualNavigator.speedWarningListener = Navigation.SpeedWarningListener((status) {
+        if (status == Navigation.SpeedWarningStatus.speedLimitExceeded && _soundEnabled) {
           FlutterRingtonePlayer().play(
             android: AndroidSounds.notification,
             ios: IosSounds.triTone,
@@ -498,13 +452,10 @@ class _NavigationScreenState extends State<NavigationScreen>
       });
     }
 
-    _visualNavigator.destinationReachedListener =
-        Navigation.DestinationReachedListener(() {
-          _stopNavigation();
-          Navigator.of(
-            context,
-          ).popUntil((route) => route.settings.name == LandingScreen.navRoute);
-        });
+    _visualNavigator.destinationReachedListener = Navigation.DestinationReachedListener(() {
+      _stopNavigation();
+      Navigator.of(context).popUntil((route) => route.settings.name == LandingScreen.navRoute);
+    });
 
     _visualNavigator.routeDeviationListener = _reroutingHandler;
     _visualNavigator.milestoneStatusListener = _reroutingHandler;
@@ -513,34 +464,24 @@ class _NavigationScreenState extends State<NavigationScreen>
   void _setupVoiceTextMessages() async {
     await _flutterTts.setLanguage("en-US");
 
-    _visualNavigator.eventTextListener = Navigation.EventTextListener((
-      Navigation.EventText eventText,
-    ) {
+    _visualNavigator.eventTextListener = Navigation.EventTextListener((Navigation.EventText eventText) {
       if (eventText.type == Navigation.TextNotificationType.maneuver) {
         if (_soundEnabled) {
           _flutterTts.speak(eventText.text);
         }
 
-        if (_appLifecycleState == AppLifecycleState.paused &&
-            _currentManeuverIndex != null) {
-          Routing.Maneuver? maneuver = _visualNavigator.getManeuver(
-            _currentManeuverIndex!,
-          );
+        if (_appLifecycleState == AppLifecycleState.paused && _currentManeuverIndex != null) {
+          Routing.Maneuver? maneuver = _visualNavigator.getManeuver(_currentManeuverIndex!);
 
           if (maneuver != null) {
-            _notificationsManager.showNotification(
-              _buildManeuverNotificationBody(maneuver, text: eventText.text),
-            );
+            _notificationsManager.showNotification(_buildManeuverNotificationBody(maneuver, text: eventText.text));
           }
         }
       }
     });
   }
 
-  NotificationBody _buildManeuverNotificationBody(
-    Routing.Maneuver maneuver, {
-    String? text,
-  }) {
+  NotificationBody _buildManeuverNotificationBody(Routing.Maneuver maneuver, {String? text}) {
     return NotificationBody(
       title: _getRemainingTimeString(),
       body: text ?? maneuver.getActionText(context),
@@ -562,9 +503,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     String arrivalInfo =
         AppLocalizations.of(context)!.arrivalTimeTitle +
         ": " +
-        DateFormat.Hm().format(
-          DateTime.now().add(Duration(seconds: _remainingDurationInSeconds)),
-        );
+        DateFormat.Hm().format(DateTime.now().add(Duration(seconds: _remainingDurationInSeconds)));
     return arrivalInfo;
   }
 
@@ -608,17 +547,11 @@ class _NavigationScreenState extends State<NavigationScreen>
       return;
     }
     if (_navigationStatus() != null) {
-      _notificationsManager.showNotification(
-        _buildNavigationStatusNotificationBody(),
-      );
+      _notificationsManager.showNotification(_buildNavigationStatusNotificationBody());
     } else if (_currentManeuverIndex != null) {
-      final Routing.Maneuver? maneuver = _visualNavigator.getManeuver(
-        _currentManeuverIndex!,
-      );
+      final Routing.Maneuver? maneuver = _visualNavigator.getManeuver(_currentManeuverIndex!);
       if (maneuver != null) {
-        _notificationsManager.showNotification(
-          _buildManeuverNotificationBody(maneuver),
-        );
+        _notificationsManager.showNotification(_buildManeuverNotificationBody(maneuver));
       }
     }
   }
@@ -644,9 +577,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     if (_navigationStatus() != null) {
       child = ReroutingIndicator(title: _navigationStatus()!);
     } else {
-      Routing.Maneuver? maneuver = _visualNavigator.getManeuver(
-        _currentManeuverIndex!,
-      );
+      Routing.Maneuver? maneuver = _visualNavigator.getManeuver(_currentManeuverIndex!);
       if (maneuver == null) {
         return null;
       }
@@ -670,14 +601,11 @@ class _NavigationScreenState extends State<NavigationScreen>
   }
 
   Widget? _buildNextManeuver(BuildContext context) {
-    if (_currentManeuverDistance > _kDistanceToShowNextManeuver ||
-        _reroutingInProgress) {
+    if (_currentManeuverDistance > _kDistanceToShowNextManeuver || _reroutingInProgress) {
       return null;
     }
 
-    Routing.Maneuver? maneuver = _nextManeuverIndex != null
-        ? _visualNavigator.getManeuver(_nextManeuverIndex!)
-        : null;
+    Routing.Maneuver? maneuver = _nextManeuverIndex != null ? _visualNavigator.getManeuver(_nextManeuverIndex!) : null;
     if (maneuver == null) {
       return null;
     }
@@ -693,11 +621,7 @@ class _NavigationScreenState extends State<NavigationScreen>
         elevation: 2,
         child: Padding(
           padding: EdgeInsets.only(top: UIStyle.popupsBorderRadius),
-          child: NextManeuver(
-            action: action,
-            distance: _nextManeuverDistance,
-            text: text,
-          ),
+          child: NextManeuver(action: action, distance: _nextManeuverDistance, text: text),
         ),
       ),
     );
@@ -722,11 +646,7 @@ class _NavigationScreenState extends State<NavigationScreen>
           ),
         FloatingActionButton(
           heroTag: null,
-          child: HdsIconWidget(
-            _soundEnabled
-                ? HdsAssetsPaths.volumeHighIcon
-                : HdsAssetsPaths.volumeOffIcon,
-          ),
+          child: HdsIconWidget(_soundEnabled ? HdsAssetsPaths.volumeHighIcon : HdsAssetsPaths.volumeOffIcon),
           backgroundColor: Theme.of(context).colorScheme.surface,
           onPressed: () async {
             await _flutterTts.stop();
@@ -736,17 +656,12 @@ class _NavigationScreenState extends State<NavigationScreen>
         Container(height: UIStyle.contentMarginLarge),
         FloatingActionButton(
           heroTag: null,
-          child: HdsIconWidget(
-            HdsAssetsPaths.crossIcon,
-            color: UIStyle.stopNavigationButtonIconColor,
-          ),
+          child: HdsIconWidget(HdsAssetsPaths.crossIcon, color: UIStyle.stopNavigationButtonIconColor),
           backgroundColor: UIStyle.stopNavigationButtonColor,
           onPressed: () async {
             if (await Dialogs.askForExitFromNavigation(context)) {
               _stopNavigation();
-              Navigator.of(context).popUntil(
-                (route) => route.settings.name == LandingScreen.navRoute,
-              );
+              Navigator.of(context).popUntil((route) => route.settings.name == LandingScreen.navRoute);
             }
           },
         ),
@@ -755,9 +670,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   }
 
   void _setupLogoAndPrincipalPointPosition() {
-    final int margin = _currentStreetName != null
-        ? (_kHereLogoOffset * _hereMapController.pixelScale).truncate()
-        : 0;
+    final int margin = _currentStreetName != null ? (_kHereLogoOffset * _hereMapController.pixelScale).truncate() : 0;
 
     _hereMapController.setWatermarkLocation(
       Anchor2D.withHorizontalAndVertical(0.5, 1),
@@ -766,8 +679,7 @@ class _NavigationScreenState extends State<NavigationScreen>
 
     _hereMapController.camera.principalPoint = Point2D(
       _hereMapController.viewportSize.width / 2,
-      _hereMapController.viewportSize.height -
-          _kPrincipalPointOffset * _hereMapController.pixelScale,
+      _hereMapController.viewportSize.height - _kPrincipalPointOffset * _hereMapController.pixelScale,
     );
   }
 
@@ -799,31 +711,20 @@ class _NavigationScreenState extends State<NavigationScreen>
             if (_currentStreetName != null)
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(
-                    left: UIStyle.contentMarginLarge,
-                    right: UIStyle.contentMarginLarge,
-                  ),
+                  padding: EdgeInsets.only(left: UIStyle.contentMarginLarge, right: UIStyle.contentMarginLarge),
                   child: Material(
                     elevation: 2,
                     color: colorScheme.surface,
-                    borderRadius: BorderRadius.circular(
-                      UIStyle.bigButtonHeight,
-                    ),
+                    borderRadius: BorderRadius.circular(UIStyle.bigButtonHeight),
                     child: Padding(
-                      padding: EdgeInsets.only(
-                        left: UIStyle.contentMarginMedium,
-                        right: UIStyle.contentMarginMedium,
-                      ),
+                      padding: EdgeInsets.only(left: UIStyle.contentMarginMedium, right: UIStyle.contentMarginMedium),
                       child: Container(
                         height: UIStyle.bigButtonHeight,
                         child: Center(
                           child: MarqueeWidget(
                             child: Text(
                               _currentStreetName!,
-                              style: TextStyle(
-                                fontSize: UIStyle.hugeFontSize,
-                                color: colorScheme.onSecondary,
-                              ),
+                              style: TextStyle(fontSize: UIStyle.hugeFontSize, color: colorScheme.onSecondary),
                               maxLines: 1,
                             ),
                           ),
@@ -861,21 +762,15 @@ class _NavigationScreenState extends State<NavigationScreen>
     if (state == AppLifecycleState.detached) {
       _notificationsManager.dismissNotification();
       _stopNavigation();
-      Navigator.of(
-        context,
-      ).popUntil((route) => route.settings.name == LandingScreen.navRoute);
+      Navigator.of(context).popUntil((route) => route.settings.name == LandingScreen.navRoute);
     }
   }
 
   @override
-  void didDevicePositioningStatusUpdated({
-    required bool isPositioningAvailable,
-    required bool hasPermissionsGranted,
-  }) {
+  void didDevicePositioningStatusUpdated({required bool isPositioningAvailable, required bool hasPermissionsGranted}) {
     if (mounted) {
       setState(() {
-        _canLocateUserPosition =
-            isPositioningAvailable && hasPermissionsGranted;
+        _canLocateUserPosition = isPositioningAvailable && hasPermissionsGranted;
         _startPositioning(context);
       });
     }
@@ -894,11 +789,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     bool simulated = false,
     Navigation.LocationSimulatorOptions? options,
   }) async {
-    _locationProvider = createLocationProvider(
-      route: widget.route,
-      simulated: simulated,
-      simulatorOptions: options,
-    );
+    _locationProvider = createLocationProvider(route: widget.route, simulated: simulated, simulatorOptions: options);
     _locationProvider?.addListener(this);
     _locationProvider?.addListener(_visualNavigator);
     _locationProvider?.start();

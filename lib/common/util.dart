@@ -109,27 +109,13 @@ MapMarker createMarkerWithImagePath(
   int? drawOrder,
   Anchor2D? anchor,
 }) {
-  MapImage mapImage = MapImage.withFilePathAndWidthAndHeight(
-    imagePath,
-    width,
-    height,
-  );
-  MapMarker mapMarker = createMarkerWithImage(
-    coordinates,
-    mapImage,
-    drawOrder: drawOrder,
-    anchor: anchor,
-  );
+  MapImage mapImage = MapImage.withFilePathAndWidthAndHeight(imagePath, width, height);
+  MapMarker mapMarker = createMarkerWithImage(coordinates, mapImage, drawOrder: drawOrder, anchor: anchor);
   return mapMarker;
 }
 
 /// Creates [MapMarker] in [coordinates] using an [image], [drawOrder] and [anchor].
-MapMarker createMarkerWithImage(
-  GeoCoordinates coordinates,
-  MapImage image, {
-  int? drawOrder,
-  Anchor2D? anchor,
-}) {
+MapMarker createMarkerWithImage(GeoCoordinates coordinates, MapImage image, {int? drawOrder, Anchor2D? anchor}) {
   MapMarker mapMarker = MapMarker(coordinates, image);
   if (drawOrder != null) {
     mapMarker.drawOrder = drawOrder;
@@ -145,9 +131,7 @@ MapMarker createMarkerWithImage(
 String stringFromDateTime(BuildContext context, DateTime? dateTime) {
   if (dateTime == null) return "";
 
-  return DateFormat(
-    AppLocalizations.of(context)!.dateTimeFormat,
-  ).format(dateTime);
+  return DateFormat(AppLocalizations.of(context)!.dateTimeFormat).format(dateTime);
 }
 
 /// An extension for the [HereMapController].
@@ -162,21 +146,14 @@ extension LogicalCoords on HereMapController {
       geoBox.expandedByPercentage(_paddingFactor),
       GeoOrientationUpdate(double.nan, double.nan),
       Rectangle2D(
-        Point2D(viewPort.left + margin, viewPort.top + margin) *
-            this.pixelScale,
-        Size2D(
-          (viewPort.width - margin * 2) * this.pixelScale,
-          (viewPort.height - margin * 2) * this.pixelScale,
-        ),
+        Point2D(viewPort.left + margin, viewPort.top + margin) * this.pixelScale,
+        Size2D((viewPort.width - margin * 2) * this.pixelScale, (viewPort.height - margin * 2) * this.pixelScale),
       ),
     );
   }
 
   /// Zooms map area specified by [geoBox] into entire map area.
-  void zoomToLogicalViewPort({
-    required GeoBox geoBox,
-    required BuildContext context,
-  }) {
+  void zoomToLogicalViewPort({required GeoBox geoBox, required BuildContext context}) {
     final RenderBox box = context.findRenderObject() as RenderBox;
 
     zoomGeoBoxToLogicalViewPort(
@@ -194,8 +171,7 @@ extension LogicalCoords on HereMapController {
 /// An extension for the [GeoCoordinates].
 extension GeoCoordinatesExtensions on GeoCoordinates {
   /// Returns formatted string.
-  String toPrettyString({int fractionDigits = 5}) =>
-      "${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}";
+  String toPrettyString({int fractionDigits = 5}) => "${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}";
 }
 
 /// An extension for the [Point2D].
@@ -227,10 +203,7 @@ void displayErrorSnackBar(BuildContext context, String errorMessage) {
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(UIStyle.contentMarginMedium),
-              child: Text(
-                errorMessage,
-                style: TextStyle(fontSize: UIStyle.hugeFontSize),
-              ),
+              child: Text(errorMessage, style: TextStyle(fontSize: UIStyle.hugeFontSize)),
             ),
           ),
         ],
@@ -240,23 +213,25 @@ void displayErrorSnackBar(BuildContext context, String errorMessage) {
 }
 
 /// Utility function that builds cancel button for application dialogs
-Widget buildDialogCancelButton(BuildContext context) => SimpleDialogOption(
-  child: Padding(
-    padding: EdgeInsets.all(UIStyle.contentMarginLarge),
-    child: Center(
-      child: Text(
-        AppLocalizations.of(context)!.cancelTitle,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: UIStyle.bigFontSize,
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onSecondary,
+Widget buildDialogCancelButton(BuildContext context, {String? cancelTitle}) {
+  return SimpleDialogOption(
+    child: Padding(
+      padding: EdgeInsets.all(UIStyle.contentMarginLarge),
+      child: Center(
+        child: Text(
+          cancelTitle ?? AppLocalizations.of(context)!.cancelTitle,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: UIStyle.bigFontSize,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),
         ),
       ),
     ),
-  ),
-  onPressed: () => Navigator.of(context).pop(false),
-);
+    onPressed: () => Navigator.of(context).pop(false),
+  );
+}
 
 /// Creates a common confirmation dialog.
 Future<bool> showCommonConfirmationDialog({
@@ -266,6 +241,7 @@ Future<bool> showCommonConfirmationDialog({
   String? actionTitle,
   Color? actionTextColor,
   Color? actionBackgroundColor,
+  String? cancelTitle,
 }) async {
   bool? result = await showDialog<bool>(
     context: context,
@@ -294,20 +270,15 @@ Future<bool> showCommonConfirmationDialog({
             children: [
               Spacer(),
               GradientElevatedButton(
-                title: Text(
-                  actionTitle,
-                  style: TextStyle(color: actionTextColor),
-                ),
+                title: Text(actionTitle, style: TextStyle(color: actionTextColor)),
                 onPressed: () => Navigator.of(context).pop(true),
-                primaryColor:
-                    actionBackgroundColor ?? UIStyle.buttonPrimaryColor,
-                secondaryColor:
-                    actionBackgroundColor ?? UIStyle.buttonSecondaryColor,
+                primaryColor: actionBackgroundColor ?? UIStyle.buttonPrimaryColor,
+                secondaryColor: actionBackgroundColor ?? UIStyle.buttonSecondaryColor,
               ),
               Spacer(),
             ],
           ),
-        buildDialogCancelButton(context),
+        buildDialogCancelButton(context, cancelTitle: cancelTitle),
       ],
     ),
   );
@@ -317,27 +288,16 @@ Future<bool> showCommonConfirmationDialog({
 
 /// Sets traffic layers visibility on the map according to option saved in preferences (or hides them if app is in
 /// offline mode).
-void setTrafficLayersVisibilityOnMap(
-  BuildContext context,
-  HereMapController hereMapController,
-) {
-  AppPreferences appPreferences = Provider.of<AppPreferences>(
-    context,
-    listen: false,
-  );
-  bool enableTraffic = appPreferences.useAppOffline
-      ? false
-      : appPreferences.showTrafficLayers;
+void setTrafficLayersVisibilityOnMap(BuildContext context, HereMapController hereMapController) {
+  AppPreferences appPreferences = Provider.of<AppPreferences>(context, listen: false);
+  bool enableTraffic = appPreferences.useAppOffline ? false : appPreferences.showTrafficLayers;
   if (enableTraffic) {
     hereMapController.mapScene.enableFeatures({
       MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow,
       MapFeatures.trafficIncidents: MapFeatureModes.trafficIncidentsAll,
     });
   } else {
-    hereMapController.mapScene.disableFeatures([
-      MapFeatures.trafficFlow,
-      MapFeatures.trafficIncidents,
-    ]);
+    hereMapController.mapScene.disableFeatures([MapFeatures.trafficFlow, MapFeatures.trafficIncidents]);
   }
 }
 
@@ -353,10 +313,7 @@ void loadMapScene(
           customMapStyleSettings.customMapStyleFilepath!,
           mapSceneLoadSceneCallback,
         )
-      : hereMapController.mapScene.loadSceneForMapScheme(
-          MapScheme.normalDay,
-          mapSceneLoadSceneCallback,
-        );
+      : hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalDay, mapSceneLoadSceneCallback);
 }
 
 /// Function provides a MapPolylineRepresentation which is to be applied on a polyline for displaying a route on map
@@ -364,15 +321,9 @@ void loadMapScene(
 /// the basis of [selected] flag.
 MapPolylineRepresentation mapRouteRepresentation({bool selected = true}) {
   return MapPolylineSolidRepresentation.withOutline(
-    MapMeasureDependentRenderSize.withSingleSize(
-      RenderSizeUnit.pixels,
-      UIStyle.routeLineWidth,
-    ),
+    MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, UIStyle.routeLineWidth),
     selected ? UIStyle.selectedRouteColor : UIStyle.routeColor,
-    MapMeasureDependentRenderSize.withSingleSize(
-      RenderSizeUnit.pixels,
-      UIStyle.routeOutLineWidth,
-    ),
+    MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, UIStyle.routeOutLineWidth),
     selected ? UIStyle.selectedRouteBorderColor : UIStyle.routeBorderColor,
     LineCap.round,
   );
