@@ -31,10 +31,7 @@ class SearchEngineProxy {
     if (offline) {
       _offlineSearchEngine = OfflineSearchEngine();
     } else {
-      _onlineSearchEngine = SearchEngine()
-        //provides well-distributed results along the route for corridor area searches.
-        ..setCustomOption('browse.ranking', 'excursionDistance')
-        ..setCustomOption('discover.ranking', 'excursionDistance');
+      _onlineSearchEngine = SearchEngine();
     }
   }
 
@@ -54,11 +51,7 @@ class SearchEngineProxy {
     PlaceIdSearchCallback callback,
   ) {
     if (offline) {
-      return _offlineSearchEngine.searchByPlaceId(
-        query,
-        languageCode,
-        callback,
-      );
+      return _offlineSearchEngine.searchByPlaceId(query, languageCode, callback);
     } else {
       return _onlineSearchEngine.searchByPlaceId(query, languageCode, callback);
     }
@@ -76,11 +69,7 @@ class SearchEngineProxy {
   /// [callback] Callback which receives the result on the main thread.
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate the execution of the task.
-  TaskHandle searchByText(
-    TextQuery query,
-    SearchOptions options,
-    SearchCallback callback,
-  ) {
+  TaskHandle searchByText(TextQuery query, SearchOptions options, SearchCallback callback) {
     if (offline) {
       return _offlineSearchEngine.searchByText(query, options, callback);
     } else {
@@ -98,11 +87,7 @@ class SearchEngineProxy {
   /// [callback] Callback which receives the result on the main thread.
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate the execution of the task.
-  TaskHandle suggest(
-    TextQuery query,
-    SearchOptions options,
-    SuggestCallback callback,
-  ) {
+  TaskHandle suggest(TextQuery query, SearchOptions options, SuggestCallback callback) {
     if (offline) {
       return _offlineSearchEngine.suggestByText(query, options, callback);
     } else {
@@ -126,23 +111,11 @@ class SearchEngineProxy {
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate execution of the task.
   ///
-  TaskHandle searchByCoordinates(
-    GeoCoordinates coordinates,
-    SearchOptions options,
-    SearchCallback callback,
-  ) {
+  TaskHandle searchByCoordinates(GeoCoordinates coordinates, SearchOptions options, SearchCallback callback) {
     if (offline) {
-      return _offlineSearchEngine.searchByCoordinates(
-        coordinates,
-        options,
-        callback,
-      );
+      return _offlineSearchEngine.searchByCoordinates(coordinates, options, callback);
     } else {
-      return _onlineSearchEngine.searchByCoordinates(
-        coordinates,
-        options,
-        callback,
-      );
+      return _onlineSearchEngine.searchByCoordinates(coordinates, options, callback);
     }
   }
 
@@ -159,11 +132,7 @@ class SearchEngineProxy {
   ///
   /// Returns [TaskHandle]. Handle that will be used to manipulate the execution of the task.
   ///
-  TaskHandle searchByCategory(
-    CategoryQuery query,
-    SearchOptions options,
-    SearchCallback callback,
-  ) {
+  TaskHandle searchByCategory(CategoryQuery query, SearchOptions options, SearchCallback callback) {
     if (offline) {
       return _offlineSearchEngine.searchByCategory(query, options, callback);
     } else {
