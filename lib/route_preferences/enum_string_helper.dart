@@ -32,10 +32,7 @@ class EnumStringHelper {
 
   /// Returns a map of truck type indices to their capitalized display names.
   static Map<int, String> truckTypeDisplayNames() {
-    return {
-      for (final type in Transport.TruckType.values)
-        type.index: type.name.capitalize(),
-    };
+    return {for (final type in Transport.TruckType.values) type.index: type.name.capitalize()};
   }
 
   /// Returns the mapping of [OptimizationMode] values to the corresponding strings.
@@ -47,9 +44,7 @@ class EnumStringHelper {
           result[value.index] = AppLocalizations.of(context)!.fastestRouteTitle;
           break;
         case OptimizationMode.shortest:
-          result[value.index] = AppLocalizations.of(
-            context,
-          )!.shortestRouteTitle;
+          result[value.index] = AppLocalizations.of(context)!.shortestRouteTitle;
           break;
       }
     }
@@ -65,14 +60,10 @@ class EnumStringHelper {
           result[value.index] = AppLocalizations.of(context)!.unitSystemMetric;
           break;
         case UnitSystem.imperialUk:
-          result[value.index] = AppLocalizations.of(
-            context,
-          )!.unitSystemImperialUk;
+          result[value.index] = AppLocalizations.of(context)!.unitSystemImperialUk;
           break;
         case UnitSystem.imperialUs:
-          result[value.index] = AppLocalizations.of(
-            context,
-          )!.unitSystemImperialUs;
+          result[value.index] = AppLocalizations.of(context)!.unitSystemImperialUs;
           break;
       }
     }
@@ -141,10 +132,7 @@ class EnumStringHelper {
     return result;
   }
 
-  static String roadFeatureNamesToString(
-    BuildContext context,
-    List<RoadFeatures> roadFeatures,
-  ) {
+  static String roadFeatureNamesToString(BuildContext context, List<RoadFeatures> roadFeatures) {
     List<String> result = <String>[];
     sortedRoadFeaturesMap(context).forEach((key, value) {
       if (roadFeatures.contains(value)) result.add(key);
@@ -153,9 +141,7 @@ class EnumStringHelper {
   }
 
   /// Returns the mapping of [RoadFeatures] values to the corresponding strings.
-  static LinkedHashMap<String, RoadFeatures> sortedRoadFeaturesMap(
-    BuildContext context,
-  ) {
+  static LinkedHashMap<String, RoadFeatures> sortedRoadFeaturesMap(BuildContext context) {
     final Map<String, RoadFeatures> result = Map<String, RoadFeatures>();
     AppLocalizations localizations = AppLocalizations.of(context)!;
 
@@ -187,11 +173,7 @@ class EnumStringHelper {
           break;
       }
     }
-    return LinkedHashMap.fromIterable(
-      result.keys.toList()..sort(),
-      key: (k) => k,
-      value: (k) => result[k]!,
-    );
+    return LinkedHashMap.fromIterable(result.keys.toList()..sort(), key: (k) => k, value: (k) => result[k]!);
   }
 
   /// Returns concatenated string of the all values from the [hazardousMaterials] list.
@@ -207,14 +189,11 @@ class EnumStringHelper {
   }
 
   /// Returns the mapping of [HazardousMaterial] values to the corresponding strings.
-  static LinkedHashMap<String, Transport.HazardousMaterial>
-  sortedHazardousMaterialsMap(BuildContext context) {
-    final Map<String, Transport.HazardousMaterial> result =
-        Map<String, Transport.HazardousMaterial>();
+  static LinkedHashMap<String, Transport.HazardousMaterial> sortedHazardousMaterialsMap(BuildContext context) {
+    final Map<String, Transport.HazardousMaterial> result = Map<String, Transport.HazardousMaterial>();
     AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    for (Transport.HazardousMaterial value
-        in Transport.HazardousMaterial.values) {
+    for (Transport.HazardousMaterial value in Transport.HazardousMaterial.values) {
       switch (value) {
         case Transport.HazardousMaterial.explosive:
           result[localizations.hazardousGoodsExplosive] = value;
@@ -251,18 +230,11 @@ class EnumStringHelper {
           break;
       }
     }
-    return LinkedHashMap.fromIterable(
-      result.keys.toList()..sort(),
-      key: (k) => k,
-      value: (k) => result[k]!,
-    );
+    return LinkedHashMap.fromIterable(result.keys.toList()..sort(), key: (k) => k, value: (k) => result[k]!);
   }
 
   /// Returns concatenated string of the all values from the [countryCodes] list.
-  static String countryCodeNamesToString(
-    BuildContext context,
-    List<CountryCode> countryCodes,
-  ) {
+  static String countryCodeNamesToString(BuildContext context, List<CountryCode> countryCodes) {
     List<String> result = <String>[];
     countryCodesMap(context).forEach((key, value) {
       if (countryCodes.contains(value)) result.add(key);
@@ -290,9 +262,6 @@ class EnumStringHelper {
         case CountryCode.aia:
           result[localizations.countryCodeAia] = value;
           break;
-        case CountryCode.ala:
-          result[localizations.countryCodeAla] = value;
-          break;
         case CountryCode.alb:
           result[localizations.countryCodeAlb] = value;
           break;
@@ -313,9 +282,6 @@ class EnumStringHelper {
           break;
         case CountryCode.ata:
           result[localizations.countryCodeAta] = value;
-          break;
-        case CountryCode.atf:
-          result[localizations.countryCodeAtf] = value;
           break;
         case CountryCode.atg:
           result[localizations.countryCodeAtg] = value;
@@ -385,9 +351,6 @@ class EnumStringHelper {
           break;
         case CountryCode.btn:
           result[localizations.countryCodeBtn] = value;
-          break;
-        case CountryCode.bvt:
-          result[localizations.countryCodeBvt] = value;
           break;
         case CountryCode.bwa:
           result[localizations.countryCodeBwa] = value;
@@ -521,9 +484,6 @@ class EnumStringHelper {
         case CountryCode.geo:
           result[localizations.countryCodeGeo] = value;
           break;
-        case CountryCode.ggy:
-          result[localizations.countryCodeGgy] = value;
-          break;
         case CountryCode.gha:
           result[localizations.countryCodeGha] = value;
           break;
@@ -569,9 +529,6 @@ class EnumStringHelper {
         case CountryCode.hkg:
           result[localizations.countryCodeHkg] = value;
           break;
-        case CountryCode.hmd:
-          result[localizations.countryCodeHmd] = value;
-          break;
         case CountryCode.hnd:
           result[localizations.countryCodeHnd] = value;
           break;
@@ -616,9 +573,6 @@ class EnumStringHelper {
           break;
         case CountryCode.jam:
           result[localizations.countryCodeJam] = value;
-          break;
-        case CountryCode.jey:
-          result[localizations.countryCodeJey] = value;
           break;
         case CountryCode.jor:
           result[localizations.countryCodeJor] = value;
@@ -973,9 +927,6 @@ class EnumStringHelper {
           break;
         case CountryCode.ukr:
           result[localizations.countryCodeUkr] = value;
-          break;
-        case CountryCode.umi:
-          result[localizations.countryCodeUmi] = value;
           break;
         case CountryCode.ury:
           result[localizations.countryCodeUry] = value;

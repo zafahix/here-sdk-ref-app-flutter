@@ -154,10 +154,6 @@
   "@countryCodeAia": {
     "description": "Country name title"
   },
-  "countryCodeAla": "Aland Islands",
-  "@countryCodeAla": {
-    "description": "Country name title"
-  },
   "countryCodeAlb": "Albania",
   "@countryCodeAlb": {
     "description": "Country name title"
@@ -184,10 +180,6 @@
   },
   "countryCodeAta": "Antarctica",
   "@countryCodeAta": {
-    "description": "Country name title"
-  },
-  "countryCodeAtf": "French Southern Territories",
-  "@countryCodeAtf": {
     "description": "Country name title"
   },
   "countryCodeAtg": "Antigua And Barbuda",
@@ -280,10 +272,6 @@
   },
   "countryCodeBtn": "Bhutan",
   "@countryCodeBtn": {
-    "description": "Country name title"
-  },
-  "countryCodeBvt": "Bouvet Island",
-  "@countryCodeBvt": {
     "description": "Country name title"
   },
   "countryCodeBwa": "Botswana",
@@ -459,10 +447,6 @@
   "@countryCodeGeo": {
     "description": "Country name title"
   },
-  "countryCodeGgy": "Guernsey",
-  "@countryCodeGgy": {
-    "description": "Country name title"
-  },
   "countryCodeGha": "Ghana",
   "@countryCodeGha": {
     "description": "Country name title"
@@ -523,10 +507,6 @@
   "@countryCodeHkg": {
     "description": "Country name title"
   },
-  "countryCodeHmd": "Heard Island And Mcdonald Islands",
-  "@countryCodeHmd": {
-    "description": "Country name title"
-  },
   "countryCodeHnd": "Honduras",
   "@countryCodeHnd": {
     "description": "Country name title"
@@ -585,10 +565,6 @@
   },
   "countryCodeJam": "Jamaica",
   "@countryCodeJam": {
-    "description": "Country name title"
-  },
-  "countryCodeJey": "Jersey",
-  "@countryCodeJey": {
     "description": "Country name title"
   },
   "countryCodeJor": "Jordan",
@@ -1061,10 +1037,6 @@
   },
   "countryCodeUkr": "Ukraine",
   "@countryCodeUkr": {
-    "description": "Country name title"
-  },
-  "countryCodeUmi": "United States Minor Outlying Islands",
-  "@countryCodeUmi": {
     "description": "Country name title"
   },
   "countryCodeUry": "Uruguay",
