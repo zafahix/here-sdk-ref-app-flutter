@@ -29,10 +29,8 @@ class IosNotificationsManager implements NotificationsManager {
   Future<bool?> init() async {
     if (_maneuverLocalNotificationsPlugin == null) {
       _maneuverLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-      var initSettings = InitializationSettings(
-        iOS: DarwinInitializationSettings(),
-      );
-      await _maneuverLocalNotificationsPlugin!.initialize(initSettings);
+      var initSettings = InitializationSettings(iOS: DarwinInitializationSettings());
+      await _maneuverLocalNotificationsPlugin!.initialize(settings: initSettings);
     }
     return await requestNotificationPermissions();
   }
@@ -40,9 +38,7 @@ class IosNotificationsManager implements NotificationsManager {
   @override
   Future<bool?> requestNotificationPermissions() async {
     return FlutterLocalNotificationsPlugin()
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions();
   }
 
@@ -50,31 +46,26 @@ class IosNotificationsManager implements NotificationsManager {
   Future<void> showNotification(NotificationBody body) async {
     late DarwinNotificationDetails iOSNotificationDetails;
     try {
-      final String savedImagePath =
-          await FileUtility.saveManeuverImageFromBundle(body.imagePath);
+      final String savedImagePath = await FileUtility.saveManeuverImageFromBundle(body.imagePath);
       iOSNotificationDetails = DarwinNotificationDetails(
         presentSound: body.presentSound,
         attachments: [DarwinNotificationAttachment(savedImagePath)],
       );
     } catch (_) {
-      iOSNotificationDetails = DarwinNotificationDetails(
-        presentSound: body.presentSound,
-      );
+      iOSNotificationDetails = DarwinNotificationDetails(presentSound: body.presentSound);
     }
 
-    var platformChannelSpecifics = NotificationDetails(
-      iOS: iOSNotificationDetails,
-    );
+    var platformChannelSpecifics = NotificationDetails(iOS: iOSNotificationDetails);
     await _maneuverLocalNotificationsPlugin!.show(
-      _defaultNotificationId,
-      body.title,
-      body.body,
-      platformChannelSpecifics,
+      id: _defaultNotificationId,
+      title: body.title,
+      body: body.body,
+      notificationDetails: platformChannelSpecifics,
     );
   }
 
   @override
   Future<void> dismissNotification() async {
-    _maneuverLocalNotificationsPlugin!.cancel(_defaultNotificationId);
+    _maneuverLocalNotificationsPlugin!.cancel(id: _defaultNotificationId);
   }
 }

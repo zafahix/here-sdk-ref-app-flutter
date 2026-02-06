@@ -1537,7 +1537,7 @@
   "@offlineAppMapsDialogTitle": {
     "description": "Title of the dialog box requesting the download of maps."
   },
-  "okTitle": "Okay",
+  "okTitle": "Ok",
   "@okTitle": {
     "description": "Title of the OK button"
   },
