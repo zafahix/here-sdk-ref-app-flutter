@@ -77,7 +77,7 @@ class RoutePoiHandler {
     this.onGetText,
     required this.offline,
   }) {
-    _searchEngine = SearchEngineProxy(offline: offline);
+    _searchEngine = SearchEngineProxy(offline: offline, enableDistributedResults: true);
   }
 
   /// Releases resources.
@@ -140,15 +140,10 @@ class RoutePoiHandler {
   }
 
   Future<List<Place>?> _searchForVertices(List<GeoCoordinates> vertices) async {
-    List<PlaceCategory> categories = _categories
-        .map((categoryId) => PlaceCategory(categoryId))
-        .toList();
+    List<PlaceCategory> categories = _categories.map((categoryId) => PlaceCategory(categoryId)).toList();
     CategoryQuery categoryQuery = CategoryQuery.withCategoriesInArea(
       categories,
-      CategoryQueryArea.withCorridorAndCenter(
-        GeoCorridor(vertices, _kGeoCorridorRadius),
-        vertices.first,
-      ),
+      CategoryQueryArea.withCorridorAndCenter(GeoCorridor(vertices, _kGeoCorridorRadius), vertices.first),
     );
 
     return _searchPois(categoryQuery).onError((SearchError? error, stackTrace) {
@@ -159,16 +154,12 @@ class RoutePoiHandler {
 
   Future<List<Place>?> _searchPois(CategoryQuery categoryQuery) {
     final Completer<List<Place>?> completer = new Completer();
-    _poiSearchTask = _searchEngine.searchByCategory(
-      categoryQuery,
-      _searchOptions,
-      (error, places) {
-        if (error != null) {
-          return completer.completeError(error);
-        }
-        return completer.complete(places);
-      },
-    );
+    _poiSearchTask = _searchEngine.searchByCategory(categoryQuery, _searchOptions, (error, places) {
+      if (error != null) {
+        return completer.completeError(error);
+      }
+      return completer.complete(places);
+    });
     return completer.future;
   }
 
@@ -177,14 +168,11 @@ class RoutePoiHandler {
         .where((wp) => wp.place != null)
         .map((wp) => wp.place!.id)
         .toSet();
-    return places
-        .whereNot((place) => wayPointsPlacesIds.contains(place.id))
-        .toList();
+    return places.whereNot((place) => wayPointsPlacesIds.contains(place.id)).toList();
   }
 
   void _addMarkersForPlaces(List<Place> places) {
-    int markerSize = (hereMapController.pixelScale * UIStyle.poiMarkerSize)
-        .round();
+    int markerSize = (hereMapController.pixelScale * UIStyle.poiMarkerSize).round();
 
     _filterPlaces(places).forEach((place) {
       SvgInfo svgInfo = PoiSVGHelper.getPoiSvgForCategoryAndText(

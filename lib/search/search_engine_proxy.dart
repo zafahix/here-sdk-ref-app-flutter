@@ -27,11 +27,18 @@ class SearchEngineProxy {
   late SearchEngine _onlineSearchEngine;
   late OfflineSearchEngine _offlineSearchEngine;
 
-  SearchEngineProxy({this.offline = false}) {
+  SearchEngineProxy({this.offline = false, bool enableDistributedResults = false}) {
     if (offline) {
       _offlineSearchEngine = OfflineSearchEngine();
     } else {
       _onlineSearchEngine = SearchEngine();
+      if (enableDistributedResults) {
+        // Enables well-distributed results along the route for corridor area searches.
+        // Use until SearchOptions.distributedResults is available (HERE SDK >= 4.25.1).
+        _onlineSearchEngine
+          ..setCustomOption('browse.ranking', 'excursionDistance')
+          ..setCustomOption('discover.ranking', 'excursionDistance');
+      }
     }
   }
 
