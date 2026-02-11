@@ -45,6 +45,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../common/application_preferences.dart';
 import '../common/custom_map_style_settings.dart';
+import '../common/map_configuration.dart';
 import '../common/marquee_widget.dart';
 import '../common/ui_style.dart';
 import '../common/util.dart' as Util;
@@ -211,7 +212,12 @@ class _NavigationScreenState extends State<NavigationScreen>
           padding: EdgeInsets.only(top: topBarWidget != null ? _kTopBarHeight + topOffset : 0),
           child: Stack(
             children: [
-              HereMap(key: _mapKey, options: options, onMapCreated: _onMapCreated),
+              HereMap(
+                key: _mapKey,
+                options: options,
+                onMapCreated: _onMapCreated,
+                mode: MapConfiguration.nativeViewMode,
+              ),
               if (nextManeuverWidget != null) nextManeuverWidget,
               if (_navigationStarted) _buildNavigationControls(context),
             ],

@@ -28,6 +28,7 @@ import 'package:provider/provider.dart';
 
 import '../common/custom_map_style_settings.dart';
 import "../common/draggable_popup_here_logo_helper.dart";
+import '../common/map_configuration.dart';
 import '../common/reset_location_button.dart';
 import '../common/ui_style.dart';
 import '../common/util.dart' as Util;
@@ -63,8 +64,7 @@ class SearchResultsScreen extends StatefulWidget {
   _SearchResultsScreenState createState() => _SearchResultsScreenState();
 }
 
-class _SearchResultsScreenState extends State<SearchResultsScreen>
-    with TickerProviderStateMixin, Positioning {
+class _SearchResultsScreenState extends State<SearchResultsScreen> with TickerProviderStateMixin, Positioning {
   static const double _kZoomDistanceToEarth = 1000; // meters
   static const double _kTapRadius = 6; // pixels
   static const double _kPlaceCardHeight = 80;
@@ -96,17 +96,14 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final HereMapOptions options = HereMapOptions()
-      ..initialBackgroundColor = Theme.of(context).colorScheme.surface;
+    final HereMapOptions options = HereMapOptions()..initialBackgroundColor = Theme.of(context).colorScheme.surface;
     return DefaultTabController(
       length: widget.places.length,
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, _) {
           if (!didPop) {
-            Navigator.of(
-              context,
-            ).pop(_hereMapController.camera.state.targetCoordinates);
+            Navigator.of(context).pop(_hereMapController.camera.state.targetCoordinates);
           }
         },
         child: Scaffold(
@@ -115,12 +112,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
             key: _hereMapKey,
             options: options,
             onMapCreated: _onMapCreated,
+            mode: MapConfiguration.nativeViewMode,
           ),
           bottomNavigationBar: _buildBottomNavigationBar(context),
           extendBodyBehindAppBar: true,
-          floatingActionButton: enableMapUpdate
-              ? null
-              : ResetLocationButton(onPressed: _resetCurrentPosition),
+          floatingActionButton: enableMapUpdate ? null : ResetLocationButton(onPressed: _resetCurrentPosition),
         ),
       ),
     );
@@ -129,8 +125,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
   void _onMapCreated(HereMapController hereMapController) {
     _hereMapController = hereMapController;
 
-    CustomMapStyleSettings customMapStyleSettings =
-        Provider.of<CustomMapStyleSettings>(context, listen: false);
+    CustomMapStyleSettings customMapStyleSettings = Provider.of<CustomMapStyleSettings>(context, listen: false);
 
     MapSceneLoadSceneCallback mapSceneLoadSceneCallback = (MapError? error) {
       if (error != null) {
@@ -140,19 +135,13 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
 
       hereMapController.setWatermarkLocation(
         Anchor2D.withHorizontalAndVertical(0, 1),
-        Point2D(
-          -hereMapController.watermarkSize.width / 2,
-          -hereMapController.watermarkSize.height / 2,
-        ),
+        Point2D(-hereMapController.watermarkSize.width / 2, -hereMapController.watermarkSize.height / 2),
       );
 
       hereMapController.camera.lookAtPointWithGeoOrientationAndMeasure(
         widget.currentPosition,
         GeoOrientationUpdate(double.nan, double.nan),
-        MapMeasure(
-          MapMeasureKind.distanceInMeters,
-          Positioning.initDistanceToEarth,
-        ),
+        MapMeasure(MapMeasureKind.distanceInMeters, Positioning.initDistanceToEarth),
       );
       _addPanListener();
       _createResultsMarkers();
@@ -161,20 +150,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
       initPositioning(context: context, hereMapController: hereMapController);
     };
 
-    Util.loadMapScene(
-      customMapStyleSettings,
-      hereMapController,
-      mapSceneLoadSceneCallback,
-    );
+    Util.loadMapScene(customMapStyleSettings, hereMapController, mapSceneLoadSceneCallback);
   }
 
   void _addPanListener() {
-    _hereMapController.gestures.panListener = PanListener((
-      state,
-      origin,
-      translation,
-      velocity,
-    ) {
+    _hereMapController.gestures.panListener = PanListener((state, origin, translation, velocity) {
       if (enableMapUpdate) {
         setState(() => enableMapUpdate = false);
       }
@@ -182,32 +162,23 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
   }
 
   void _resetCurrentPosition() {
-    GeoCoordinates coordinates = lastKnownLocation != null
-        ? lastKnownLocation!.coordinates
-        : widget.currentPosition;
+    GeoCoordinates coordinates = lastKnownLocation != null ? lastKnownLocation!.coordinates : widget.currentPosition;
 
     _hereMapController.camera.lookAtPointWithGeoOrientationAndMeasure(
       coordinates,
       GeoOrientationUpdate(double.nan, double.nan),
-      MapMeasure(
-        MapMeasureKind.distanceInMeters,
-        Positioning.initDistanceToEarth,
-      ),
+      MapMeasure(MapMeasureKind.distanceInMeters, Positioning.initDistanceToEarth),
     );
     setState(() => enableMapUpdate = true);
   }
 
   void _setTapGestureHandler() {
-    _hereMapController.gestures.tapListener = TapListener(
-      (Point2D touchPoint) => _pickMapMarker(touchPoint),
-    );
+    _hereMapController.gestures.tapListener = TapListener((Point2D touchPoint) => _pickMapMarker(touchPoint));
   }
 
   void _pickMapMarker(Point2D touchPoint) {
     _hereMapController.pick(
-      MapSceneMapPickFilter(<MapSceneMapPickFilterContentType>[
-        MapSceneMapPickFilterContentType.mapItems,
-      ]),
+      MapSceneMapPickFilter(<MapSceneMapPickFilterContentType>[MapSceneMapPickFilterContentType.mapItems]),
       Rectangle2D(touchPoint, Size2D(_kTapRadius, _kTapRadius)),
       (MapPickResult? result) {
         List<MapMarker>? mapMarkerList = result?.mapItems?.markers;
@@ -249,13 +220,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
   void _createResultsMarkers() {
     assert(widget.places.isNotEmpty);
 
-    int markerSize = (_hereMapController.pixelScale * UIStyle.searchMarkerSize)
-        .truncate();
-    _smallMarkerImage = MapImage.withFilePathAndWidthAndHeight(
-      "assets/map_marker.svg",
-      markerSize,
-      markerSize,
-    );
+    int markerSize = (_hereMapController.pixelScale * UIStyle.searchMarkerSize).truncate();
+    _smallMarkerImage = MapImage.withFilePathAndWidthAndHeight("assets/map_marker.svg", markerSize, markerSize);
     _bigMarkerImage = MapImage.withFilePathAndWidthAndHeight(
       "assets/map_marker_big.svg",
       markerSize * 2,
@@ -279,19 +245,13 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
     if (widget.places.length == 1) {
       _hereMapController.camera.lookAtPointWithMeasure(
         widget.places.first.geoCoordinates!,
-        MapMeasure(
-          MapMeasureKind.distanceInMeters,
-          Positioning.initDistanceToEarth,
-        ),
+        MapMeasure(MapMeasureKind.distanceInMeters, Positioning.initDistanceToEarth),
       );
     } else {
-      GeoBox? geoBox = GeoBox.containingGeoCoordinates(
-        widget.places.map((e) => e.geoCoordinates!).toList(),
-      );
+      GeoBox? geoBox = GeoBox.containingGeoCoordinates(widget.places.map((e) => e.geoCoordinates!).toList());
 
       if (geoBox != null && _bottomBarKey.currentContext != null) {
-        final RenderBox bottomBarBox =
-            _bottomBarKey.currentContext!.findRenderObject() as RenderBox;
+        final RenderBox bottomBarBox = _bottomBarKey.currentContext!.findRenderObject() as RenderBox;
         final double topOffset = MediaQuery.of(context).padding.top;
 
         _hereMapController.zoomGeoBoxToLogicalViewPort(
@@ -317,13 +277,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
         child: TabBarView(
           controller: _tabController,
           children: widget.places
-              .map(
-                (place) => Card(
-                  elevation: 2,
-                  key: UniqueKey(),
-                  child: _buildPlaceTile(context, place, null),
-                ),
-              )
+              .map((place) => Card(elevation: 2, key: UniqueKey(), child: _buildPlaceTile(context, place, null)))
               .toList(),
         ),
       ),
@@ -335,27 +289,18 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
       children: [
         IconButton(
           icon: HdsIconWidget(HdsAssetsPaths.arrowLeftIcon),
-          onPressed: () => Navigator.of(
-            context,
-          ).pop(_hereMapController.camera.state.targetCoordinates),
+          onPressed: () => Navigator.of(context).pop(_hereMapController.camera.state.targetCoordinates),
         ),
         Expanded(
           child: Text(
             widget.queryString,
-            style: TextStyle(
-              fontSize: UIStyle.hugeFontSize,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: UIStyle.hugeFontSize, fontWeight: FontWeight.bold),
           ),
         ),
         if (widget.places.length > 1)
           IconButton(
-            icon: HdsIconWidget.medium(
-              expanded ? HdsAssetsPaths.chevronDown : HdsAssetsPaths.chevronUp,
-            ),
-            onPressed: expanded
-                ? () => Navigator.of(context).pop()
-                : () => _showResultsList(context),
+            icon: HdsIconWidget.medium(expanded ? HdsAssetsPaths.chevronDown : HdsAssetsPaths.chevronUp),
+            onPressed: expanded ? () => Navigator.of(context).pop() : () => _showResultsList(context),
           ),
       ],
     );
@@ -367,10 +312,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildNavigationHeader(context, false),
-          _buildPlacesTabs(context),
-        ],
+        children: [_buildNavigationHeader(context, false), _buildPlacesTabs(context)],
       ),
     );
   }
@@ -383,17 +325,13 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
       decoration: BoxDecoration(
         border: Border(
           left: BorderSide(
-            color: _selectedIndex == index
-                ? colorScheme.secondary
-                : Colors.transparent,
+            color: _selectedIndex == index ? colorScheme.secondary : Colors.transparent,
             width: UIStyle.contentMarginExtraSmall,
           ),
         ),
       ),
       child: ListTile(
-        tileColor: _selectedIndex == index
-            ? UIStyle.selectedListTileColor
-            : null,
+        tileColor: _selectedIndex == index ? UIStyle.selectedListTileColor : null,
         title: Text(
           place.title,
           style: TextStyle(fontSize: UIStyle.hugeFontSize),
@@ -401,15 +339,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Padding(
-          padding: EdgeInsets.only(
-            top: UIStyle.contentMarginSmall,
-            bottom: UIStyle.contentMarginSmall,
-          ),
-          child: Text(
-            place.address.addressText,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          padding: EdgeInsets.only(top: UIStyle.contentMarginSmall, bottom: UIStyle.contentMarginSmall),
+          child: Text(place.address.addressText, maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
         trailing: ClipOval(
           child: Material(
@@ -419,10 +350,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
               color: colorScheme.surface,
               child: InkWell(
                 child: Center(
-                  child: HdsIconWidget.medium(
-                    HdsAssetsPaths.path,
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
+                  child: HdsIconWidget.medium(HdsAssetsPaths.path, color: Theme.of(context).colorScheme.onSecondary),
                 ),
                 onTap: () {
                   if (index != null) {
@@ -487,11 +415,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
                   (context, index) {
                     final int itemIndex = index ~/ 2;
                     return index.isEven
-                        ? _buildPlaceTile(
-                            context,
-                            widget.places[itemIndex],
-                            itemIndex,
-                          )
+                        ? _buildPlaceTile(context, widget.places[itemIndex], itemIndex)
                         : Divider(height: 1);
                   },
                   semanticIndexCallback: (Widget widget, int localIndex) {
@@ -511,10 +435,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
 
     _hereMapController.setWatermarkLocation(
       Anchor2D.withHorizontalAndVertical(0, 1),
-      Point2D(
-        -_hereMapController.watermarkSize.width / 2,
-        -_hereMapController.watermarkSize.height / 2,
-      ),
+      Point2D(-_hereMapController.watermarkSize.width / 2, -_hereMapController.watermarkSize.height / 2),
     );
   }
 }
